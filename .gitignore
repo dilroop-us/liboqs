@@ -59,3 +59,12 @@ massif.out.*
 # Environment/local config
 .env
 .env.*
+
+# Layer 3 experiment binaries
+experiments/layer3-v7-custom-rng/v7_embedded_rng_wrapper
+
+# Layer 3 local results
+layer3-results/
+*.raw
+massif.out.*
+
