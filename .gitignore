@@ -68,3 +68,21 @@ layer3-results/
 *.raw
 massif.out.*
 
+
+# Layer 3 local result files
+layer3-results/
+*.txt
+*.raw
+massif.out.*
+
+# Layer 3 compiled binaries
+experiments/layer3-v6-wrapper/v6_app_wrapper
+experiments/layer3-v7-custom-rng/v7_embedded_rng_wrapper
+experiments/layer3-v8-operation-profiler/v8_operation_profiler
+
+# Local build folders
+build/
+build-min/
+build-noopenssl/
+build-embedded/
+build-*/
