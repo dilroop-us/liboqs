@@ -86,3 +86,13 @@ build-min/
 build-noopenssl/
 build-embedded/
 build-*/
+
+# Layer 3 v10 binaries
+experiments/layer3-v10-reduced-ram/v10_baseline_profiler
+experiments/layer3-v10-reduced-ram/v10_reduce_ram_profiler
+
+# Layer 3 local results
+layer3-results/
+*.raw
+massif.out.*
+*.txt
