@@ -96,3 +96,19 @@ layer3-results/
 *.raw
 massif.out.*
 *.txt
+
+# Layer 3 v12 binaries
+experiments/layer3-v12-config-matrix/v12_baseline_profiler
+experiments/layer3-v12-config-matrix/v12_reduce_ram_profiler
+experiments/layer3-v12-config-matrix/v12_serial_fips202_profiler
+experiments/layer3-v12-config-matrix/v12_reduce_ram_serial_fips202_profiler
+
+# Layer 3 v12 build outputs
+build-embedded-serial-fips202/
+build-embedded-reduce-ram-serial-fips202/
+
+# Layer 3 local result files
+layer3-results/
+*.raw
+massif.out.*
+*.txt
