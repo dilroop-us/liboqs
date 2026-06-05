@@ -140,7 +140,8 @@ typedef struct
   mld_poly vec[MLDSA_K]; /**< Component polynomials. */
 } mld_polyveck;
 
-#if (!defined(MLD_CONFIG_NO_SIGN_API) && defined(MLD_CONFIG_REDUCE_RAM)) || \
+#if (!defined(MLD_CONFIG_NO_SIGN_API) && \
+     (defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY))) || \
     defined(MLD_UNIT_TEST)
 #define mld_polyveck_reduce MLD_NAMESPACE_KL(polyveck_reduce)
 /**

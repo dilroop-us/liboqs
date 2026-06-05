@@ -112,3 +112,18 @@ layer3-results/
 *.raw
 massif.out.*
 *.txt
+
+# Layer 3 v13 binaries
+experiments/layer3-v13-lazy-matrix-only/v13_baseline_profiler
+experiments/layer3-v13-lazy-matrix-only/v13_reduce_ram_profiler
+experiments/layer3-v13-lazy-matrix-only/v13_lazy_polyvec_profiler
+
+# Layer 3 v13 build output
+build-embedded-lazy-matrix-only/
+
+# Layer 3 generated experiment outputs
+experiments/layer3-v13-lazy-matrix-only/*.txt
+experiments/layer3-v13-lazy-matrix-only/*.diff
+
+# Layer 3 local backup files
+*.before_v13

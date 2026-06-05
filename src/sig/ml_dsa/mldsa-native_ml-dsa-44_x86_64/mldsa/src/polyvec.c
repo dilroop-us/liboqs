@@ -240,7 +240,7 @@ uint32_t mld_polyvecl_chknorm(const mld_polyvecl *v, int32_t bound)
 /************ Vectors of polynomials of length MLDSA_K **************/
 /**************************************************************/
 #if (!defined(MLD_CONFIG_NO_SIGN_API) &&                       \
-     defined(MLD_CONFIG_REDUCE_RAM)) ||                        \
+     (defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY))) ||                        \
     defined(MLD_UNIT_TEST)
 MLD_INTERNAL_API
 void mld_polyveck_reduce(mld_polyveck *v)

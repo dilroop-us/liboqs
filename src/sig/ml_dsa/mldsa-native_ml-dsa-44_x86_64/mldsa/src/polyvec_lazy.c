@@ -53,7 +53,7 @@ __contract__(
   mld_poly_permute_bitrev_to_custom_optional(p);
 }
 
-#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if (!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST)
 
 MLD_INTERNAL_API
 void mld_polyvec_matrix_expand_eager(mld_polymat_eager *mat,
@@ -182,7 +182,7 @@ void mld_polyvec_matrix_pointwise_montgomery_yvec_eager(mld_polyveck *w,
 
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
-#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY) || defined(MLD_UNIT_TEST)
 
 MLD_INTERNAL_API
 void mld_polyvec_matrix_expand_lazy(mld_polymat_lazy *mat,

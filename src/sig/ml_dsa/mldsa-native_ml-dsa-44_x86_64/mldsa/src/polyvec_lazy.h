@@ -137,7 +137,7 @@ typedef struct
 #if !defined(MLD_CONFIG_NO_KEYPAIR_API) || !defined(MLD_CONFIG_NO_SIGN_API)
 /* s1vec */
 
-#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if (!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST)
 static MLD_INLINE void mld_unpack_sk_s1hat_eager(
     mld_sk_s1hat_eager *s1,
     const uint8_t packed_s1[MLDSA_L * MLDSA_POLYETA_PACKEDBYTES])
@@ -167,7 +167,7 @@ __contract__(
 ) { *buf = s1->vec.vec[i]; }
 #endif /* !MLD_CONFIG_NO_SIGN_API */
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
-#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY) || defined(MLD_UNIT_TEST)
 static MLD_INLINE void mld_unpack_sk_s1hat_lazy(
     mld_sk_s1hat_lazy *s1,
     const uint8_t packed_s1[MLDSA_L * MLDSA_POLYETA_PACKEDBYTES])
@@ -199,7 +199,7 @@ __contract__(
 /* s2vec */
 
 #if (!defined(MLD_CONFIG_NO_SIGN_API) || defined(MLD_UNIT_TEST)) && \
-    (!defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST))
+    ((!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST))
 static MLD_INLINE void mld_unpack_sk_s2hat_eager(
     mld_sk_s2hat_eager *s2,
     const uint8_t packed_s2[MLDSA_K * MLDSA_POLYETA_PACKEDBYTES])
@@ -230,7 +230,7 @@ __contract__(
 #endif /* !MLD_CONFIG_NO_SIGN_API */
 #endif /* (!MLD_CONFIG_NO_SIGN_API || MLD_UNIT_TEST) && \
           (!MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST) */
-#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY) || defined(MLD_UNIT_TEST)
 static MLD_INLINE void mld_unpack_sk_s2hat_lazy(
     mld_sk_s2hat_lazy *s2,
     const uint8_t packed_s2[MLDSA_K * MLDSA_POLYETA_PACKEDBYTES])
@@ -262,7 +262,7 @@ __contract__(
 /* t0vec */
 
 #if (!defined(MLD_CONFIG_NO_SIGN_API) || defined(MLD_UNIT_TEST)) && \
-    (!defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST))
+    ((!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST))
 static MLD_INLINE void mld_unpack_sk_t0hat_eager(
     mld_sk_t0hat_eager *t0,
     const uint8_t packed_t0[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES])
@@ -306,7 +306,7 @@ __contract__(
 #endif /* !MLD_CONFIG_NO_SIGN_API */
 #endif /* (!MLD_CONFIG_NO_SIGN_API || MLD_UNIT_TEST) && \
           (!MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST) */
-#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY) || defined(MLD_UNIT_TEST)
 static MLD_INLINE void mld_unpack_sk_t0hat_lazy(
     mld_sk_t0hat_lazy *t0,
     const uint8_t packed_t0[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES])
@@ -339,7 +339,7 @@ __contract__(
 /* yvec */
 
 #if !defined(MLD_CONFIG_NO_SIGN_API) && \
-    (!defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST))
+    ((!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST))
 static MLD_INLINE void mld_yvec_init_eager(
     mld_yvec_eager *y, const uint8_t rhoprime[MLDSA_CRHBYTES], uint16_t nonce)
 __contract__(
@@ -368,7 +368,7 @@ __contract__(
 #endif /* !MLD_CONFIG_NO_SIGN_API && (!MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST) \
         */
 #if !defined(MLD_CONFIG_NO_SIGN_API) && \
-    (defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST))
+    (defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY) || defined(MLD_UNIT_TEST))
 static MLD_INLINE void mld_yvec_init_lazy(
     mld_yvec_lazy *y, const uint8_t rhoprime[MLDSA_CRHBYTES], uint16_t nonce)
 __contract__(
@@ -406,7 +406,7 @@ __contract__(
 
 /* polymat */
 
-#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if (!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST)
 /** Eager polymat: precomputed and stored full MLDSA_K x MLDSA_L matrix. */
 typedef struct
 {
@@ -439,7 +439,7 @@ __contract__(
 #endif
 }
 
-#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if (!defined(MLD_CONFIG_REDUCE_RAM) && !defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)) || defined(MLD_UNIT_TEST)
 /**
  * Implementation of ExpandA. Generates matrix A with uniformly random
  * coefficients a_{i,j} by performing rejection sampling on the output stream
@@ -524,7 +524,7 @@ __contract__(
 #endif /* !MLD_CONFIG_NO_SIGN_API */
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
-#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY) || defined(MLD_UNIT_TEST)
 MLD_INTERNAL_API
 void mld_polyvec_matrix_expand_lazy(mld_polymat_lazy *mat,
                                     const uint8_t rho[MLDSA_SEEDBYTES])
@@ -604,7 +604,7 @@ __contract__(
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 /* Dispatch: typedef and define based on MLD_CONFIG_REDUCE_RAM */
-#if defined(MLD_CONFIG_REDUCE_RAM)
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_CONFIG_EXPERIMENTAL_LAZY_MATRIX_ONLY)
 typedef mld_sk_s1hat_lazy mld_sk_s1hat;
 typedef mld_sk_s2hat_lazy mld_sk_s2hat;
 typedef mld_sk_t0hat_lazy mld_sk_t0hat;
