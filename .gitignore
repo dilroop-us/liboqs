@@ -127,3 +127,20 @@ experiments/layer3-v13-lazy-matrix-only/*.diff
 
 # Layer 3 local backup files
 *.before_v13
+
+
+# Layer 3 v14 build outputs
+build-v14-stack-baseline/
+build-v14-stack-reduce_ram/
+build-v14-stack-lazy_polyvec/
+
+# Layer 3 v14 binaries
+experiments/layer3-v14-stack-lifetime/v14_baseline_profiler
+experiments/layer3-v14-stack-lifetime/v14_reduce_ram_profiler
+experiments/layer3-v14-stack-lifetime/v14_lazy_polyvec_profiler
+
+# Layer 3 v14 generated local files
+experiments/layer3-v14-stack-lifetime/*.csv
+experiments/layer3-v14-stack-lifetime/*.txt
+experiments/layer3-v14-stack-lifetime/*.diff
+
