@@ -146,6 +146,35 @@ static int mld_check_pct(uint8_t const pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 }
 #endif /* !MLD_CONFIG_KEYGEN_PCT */
 
+
+/*
+ * Layer 3 v15 experiment:
+ *
+ * Static matrix workspace prototype.
+ *
+ * This keeps the eager matrix path but moves the large mld_polymat
+ * workspace out of the stack when MLD_CONFIG_EXPERIMENTAL_STATIC_MATRIX_WORKSPACE
+ * is enabled.
+ *
+ * This is an experimental single-operation/IoT-style prototype.
+ * It is not thread-safe and should not be treated as production API design.
+ */
+#if defined(MLD_CONFIG_EXPERIMENTAL_STATIC_MATRIX_WORKSPACE)
+static MLD_ALIGN mld_polymat mld_v15_static_mat;
+
+#define MLD_V15_ALLOC_MAT(name) \
+  mld_polymat *name = &mld_v15_static_mat
+
+#define MLD_V15_FREE_MAT(name) \
+  do { (void)(name); } while (0)
+#else
+#define MLD_V15_ALLOC_MAT(name) \
+  MLD_ALLOC(name, mld_polymat, 1, context)
+
+#define MLD_V15_FREE_MAT(name) \
+  MLD_FREE(name, mld_polymat, 1, context)
+#endif
+
 static void mld_sample_s1_s2(mld_polyvecl *s1, mld_polyveck *s2,
                              const uint8_t seed[MLDSA_CRHBYTES])
 __contract__(
@@ -244,7 +273,7 @@ __contract__(
 {
   unsigned int k;
   int ret;
-  MLD_ALLOC(mat, mld_polymat, 1, context);
+  MLD_V15_ALLOC_MAT(mat);
   MLD_ALLOC(t0k, mld_poly, 1, context);
   MLD_ALLOC(t1k, mld_poly, 1, context);
 
@@ -303,7 +332,7 @@ cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(t1k, mld_poly, 1, context);
   MLD_FREE(t0k, mld_poly, 1, context);
-  MLD_FREE(mat, mld_polymat, 1, context);
+  MLD_V15_FREE_MAT(mat);
   return ret;
 }
 
@@ -835,7 +864,7 @@ int mld_sign_signature_internal(uint8_t sig[MLDSA_CRYPTO_BYTES], size_t *siglen,
   const uint16_t nonce_limit = mld_get_max_signing_attempts();
   MLD_ALLOC(seedbuf, uint8_t,
             2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES + 2 * MLDSA_CRHBYTES, context);
-  MLD_ALLOC(mat, mld_polymat, 1, context);
+  MLD_V15_ALLOC_MAT(mat);
   MLD_ALLOC(s1hat, mld_sk_s1hat, 1, context);
   MLD_ALLOC(t0hat, mld_sk_t0hat, 1, context);
   MLD_ALLOC(s2hat, mld_sk_s2hat, 1, context);
@@ -941,7 +970,7 @@ cleanup:
   MLD_FREE(s2hat, mld_sk_s2hat, 1, context);
   MLD_FREE(t0hat, mld_sk_t0hat, 1, context);
   MLD_FREE(s1hat, mld_sk_s1hat, 1, context);
-  MLD_FREE(mat, mld_polymat, 1, context);
+  MLD_V15_FREE_MAT(mat);
   MLD_FREE(seedbuf, uint8_t,
            2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES + 2 * MLDSA_CRHBYTES, context);
   return ret;
@@ -1100,7 +1129,7 @@ int mld_sign_verify_internal(const uint8_t *sig, size_t siglen,
   MLD_ALLOC(c2, uint8_t, MLDSA_CTILDEBYTES, context);
   MLD_ALLOC(z, mld_polyvecl, 1, context);
   MLD_ALLOC(cp, mld_poly, 1, context);
-  MLD_ALLOC(mat, mld_polymat, 1, context);
+  MLD_V15_ALLOC_MAT(mat);
   MLD_ALLOC(w1, mld_poly, 1, context);
   MLD_ALLOC(tmp, mld_poly, 1, context);
 
@@ -1205,7 +1234,7 @@ cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(tmp, mld_poly, 1, context);
   MLD_FREE(w1, mld_poly, 1, context);
-  MLD_FREE(mat, mld_polymat, 1, context);
+  MLD_V15_FREE_MAT(mat);
   MLD_FREE(cp, mld_poly, 1, context);
   MLD_FREE(z, mld_polyvecl, 1, context);
   MLD_FREE(c2, uint8_t, MLDSA_CTILDEBYTES, context);

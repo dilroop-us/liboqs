@@ -144,3 +144,21 @@ experiments/layer3-v14-stack-lifetime/*.csv
 experiments/layer3-v14-stack-lifetime/*.txt
 experiments/layer3-v14-stack-lifetime/*.diff
 
+
+# Layer 3 v15 build outputs
+build-v15-static-matrix-workspace/
+
+# Layer 3 v15 profiler binaries
+experiments/layer3-v15-static-matrix-workspace/v15_baseline_profiler
+experiments/layer3-v15-static-matrix-workspace/v15_reduce_ram_profiler
+experiments/layer3-v15-static-matrix-workspace/v15_static_matrix_profiler
+
+# Layer 3 v15 generated local files
+experiments/layer3-v15-static-matrix-workspace/*.csv
+experiments/layer3-v15-static-matrix-workspace/*.txt
+experiments/layer3-v15-static-matrix-workspace/*.diff
+experiments/layer3-v15-static-matrix-workspace/*.before_v15
+
+# Layer 3 generated result files
+layer3-results/v15_*.csv
+layer3-results/v15_*.md
