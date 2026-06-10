@@ -162,3 +162,22 @@ experiments/layer3-v15-static-matrix-workspace/*.before_v15
 # Layer 3 generated result files
 layer3-results/v15_*.csv
 layer3-results/v15_*.md
+
+# Layer 3 v16 build outputs
+build-v16-caller-matrix-workspace/
+
+# Layer 3 v16 profiler binaries
+experiments/layer3-v16-caller-matrix-workspace/v16_baseline_profiler
+experiments/layer3-v16-caller-matrix-workspace/v16_reduce_ram_profiler
+experiments/layer3-v16-caller-matrix-workspace/v16_static_matrix_profiler
+experiments/layer3-v16-caller-matrix-workspace/v16_caller_matrix_profiler
+
+# Layer 3 v16 generated local files
+experiments/layer3-v16-caller-matrix-workspace/*.csv
+experiments/layer3-v16-caller-matrix-workspace/*.txt
+experiments/layer3-v16-caller-matrix-workspace/*.diff
+experiments/layer3-v16-caller-matrix-workspace/*.before_v16
+
+# Layer 3 v16 generated result files
+layer3-results/v16_*.csv
+layer3-results/v16_*.md

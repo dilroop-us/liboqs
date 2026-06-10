@@ -148,30 +148,61 @@ static int mld_check_pct(uint8_t const pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 
 
 /*
- * Layer 3 v15 experiment:
+ * Layer 3 v16 experiment:
  *
- * Static matrix workspace prototype.
+ * Caller-provided matrix workspace prototype.
  *
- * This keeps the eager matrix path but moves the large mld_polymat
- * workspace out of the stack when MLD_CONFIG_EXPERIMENTAL_STATIC_MATRIX_WORKSPACE
- * is enabled.
+ * v15 moved mld_polymat into hidden static/BSS memory.
+ * v16 makes the workspace explicit: the caller/profiler/device provides
+ * the memory and this file only stores a thread-local pointer to it.
  *
- * This is an experimental single-operation/IoT-style prototype.
- * It is not thread-safe and should not be treated as production API design.
+ * This keeps the eager matrix path while reducing stack pressure.
  */
-#if defined(MLD_CONFIG_EXPERIMENTAL_STATIC_MATRIX_WORKSPACE)
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_MATRIX_WORKSPACE)
+typedef struct {
+  MLD_ALIGN mld_polymat mat;
+} mld_v16_matrix_workspace;
+
+static _Thread_local mld_v16_matrix_workspace *mld_v16_tls_workspace;
+
+size_t PQCP_MLDSA_NATIVE_MLDSA44_C_v16_matrix_workspace_bytes(void) {
+  return sizeof(mld_v16_matrix_workspace);
+}
+
+int PQCP_MLDSA_NATIVE_MLDSA44_C_v16_matrix_workspace_set(void *workspace, size_t workspace_bytes) {
+  if (workspace == 0) {
+    mld_v16_tls_workspace = 0;
+    return 0;
+  }
+
+  if (workspace_bytes < sizeof(mld_v16_matrix_workspace)) {
+    return -1;
+  }
+
+  mld_v16_tls_workspace = (mld_v16_matrix_workspace *)workspace;
+  return 0;
+}
+
+#define MLD_V16_ALLOC_MAT(name) \
+  mld_polymat *name = &mld_v16_tls_workspace->mat
+
+#define MLD_V16_FREE_MAT(name) \
+  do { (void)(name); } while (0)
+
+#elif defined(MLD_CONFIG_EXPERIMENTAL_STATIC_MATRIX_WORKSPACE)
 static MLD_ALIGN mld_polymat mld_v15_static_mat;
 
-#define MLD_V15_ALLOC_MAT(name) \
+#define MLD_V16_ALLOC_MAT(name) \
   mld_polymat *name = &mld_v15_static_mat
 
-#define MLD_V15_FREE_MAT(name) \
+#define MLD_V16_FREE_MAT(name) \
   do { (void)(name); } while (0)
+
 #else
-#define MLD_V15_ALLOC_MAT(name) \
+#define MLD_V16_ALLOC_MAT(name) \
   MLD_ALLOC(name, mld_polymat, 1, context)
 
-#define MLD_V15_FREE_MAT(name) \
+#define MLD_V16_FREE_MAT(name) \
   MLD_FREE(name, mld_polymat, 1, context)
 #endif
 
@@ -273,7 +304,7 @@ __contract__(
 {
   unsigned int k;
   int ret;
-  MLD_V15_ALLOC_MAT(mat);
+  MLD_V16_ALLOC_MAT(mat);
   MLD_ALLOC(t0k, mld_poly, 1, context);
   MLD_ALLOC(t1k, mld_poly, 1, context);
 
@@ -332,7 +363,7 @@ cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(t1k, mld_poly, 1, context);
   MLD_FREE(t0k, mld_poly, 1, context);
-  MLD_V15_FREE_MAT(mat);
+  MLD_V16_FREE_MAT(mat);
   return ret;
 }
 
@@ -864,7 +895,7 @@ int mld_sign_signature_internal(uint8_t sig[MLDSA_CRYPTO_BYTES], size_t *siglen,
   const uint16_t nonce_limit = mld_get_max_signing_attempts();
   MLD_ALLOC(seedbuf, uint8_t,
             2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES + 2 * MLDSA_CRHBYTES, context);
-  MLD_V15_ALLOC_MAT(mat);
+  MLD_V16_ALLOC_MAT(mat);
   MLD_ALLOC(s1hat, mld_sk_s1hat, 1, context);
   MLD_ALLOC(t0hat, mld_sk_t0hat, 1, context);
   MLD_ALLOC(s2hat, mld_sk_s2hat, 1, context);
@@ -970,7 +1001,7 @@ cleanup:
   MLD_FREE(s2hat, mld_sk_s2hat, 1, context);
   MLD_FREE(t0hat, mld_sk_t0hat, 1, context);
   MLD_FREE(s1hat, mld_sk_s1hat, 1, context);
-  MLD_V15_FREE_MAT(mat);
+  MLD_V16_FREE_MAT(mat);
   MLD_FREE(seedbuf, uint8_t,
            2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES + 2 * MLDSA_CRHBYTES, context);
   return ret;
@@ -1129,7 +1160,7 @@ int mld_sign_verify_internal(const uint8_t *sig, size_t siglen,
   MLD_ALLOC(c2, uint8_t, MLDSA_CTILDEBYTES, context);
   MLD_ALLOC(z, mld_polyvecl, 1, context);
   MLD_ALLOC(cp, mld_poly, 1, context);
-  MLD_V15_ALLOC_MAT(mat);
+  MLD_V16_ALLOC_MAT(mat);
   MLD_ALLOC(w1, mld_poly, 1, context);
   MLD_ALLOC(tmp, mld_poly, 1, context);
 
@@ -1234,7 +1265,7 @@ cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(tmp, mld_poly, 1, context);
   MLD_FREE(w1, mld_poly, 1, context);
-  MLD_V15_FREE_MAT(mat);
+  MLD_V16_FREE_MAT(mat);
   MLD_FREE(cp, mld_poly, 1, context);
   MLD_FREE(z, mld_polyvecl, 1, context);
   MLD_FREE(c2, uint8_t, MLDSA_CTILDEBYTES, context);
