@@ -181,3 +181,13 @@ experiments/layer3-v16-caller-matrix-workspace/*.before_v16
 # Layer 3 v16 generated result files
 layer3-results/v16_*.csv
 layer3-results/v16_*.md
+
+# Layer 3 v17a generated result files
+layer3-results/v17a_*.csv
+layer3-results/v17a_*.md
+
+# Layer 3 v17a local scratch files
+experiments/layer3-v17a-lifetime-map/*.csv
+experiments/layer3-v17a-lifetime-map/*.txt
+experiments/layer3-v17a-lifetime-map/*.diff
+experiments/layer3-v17a-lifetime-map/*.snapshot
