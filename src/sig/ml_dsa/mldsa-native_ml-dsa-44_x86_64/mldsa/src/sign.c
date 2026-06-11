@@ -148,17 +148,85 @@ static int mld_check_pct(uint8_t const pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 
 
 /*
- * Layer 3 v16 experiment:
+ * Layer 3 v17b experiment:
  *
- * Caller-provided matrix workspace prototype.
+ * Caller-provided full signing workspace prototype.
  *
- * v15 moved mld_polymat into hidden static/BSS memory.
- * v16 makes the workspace explicit: the caller/profiler/device provides
- * the memory and this file only stores a thread-local pointer to it.
+ * v16 moved only mld_polymat out of stack into caller-owned memory.
+ * v17b also moves the large signing secret-key NTT buffers:
  *
- * This keeps the eager matrix path while reducing stack pressure.
+ *   - mld_sk_s1hat
+ *   - mld_sk_s2hat
+ *   - mld_sk_t0hat
+ *
+ * v17a showed these buffers overlap in lifetime, so simple union-based
+ * reuse is not safe. Instead, v17b keeps separate buffers but moves them
+ * into an explicit caller-provided workspace.
  */
-#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_MATRIX_WORKSPACE)
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_SIGN_WORKSPACE)
+typedef struct {
+  MLD_ALIGN mld_polymat mat;
+  MLD_ALIGN mld_sk_s1hat s1hat;
+  MLD_ALIGN mld_sk_s2hat s2hat;
+  MLD_ALIGN mld_sk_t0hat t0hat;
+} mld_v17b_sign_workspace;
+
+static _Thread_local mld_v17b_sign_workspace *mld_v17b_tls_workspace;
+
+size_t PQCP_MLDSA_NATIVE_MLDSA44_X86_64_v17b_sign_workspace_bytes(void) {
+  return sizeof(mld_v17b_sign_workspace);
+}
+
+int PQCP_MLDSA_NATIVE_MLDSA44_X86_64_v17b_sign_workspace_set(void *workspace, size_t workspace_bytes) {
+  if (workspace == 0) {
+    mld_v17b_tls_workspace = 0;
+    return 0;
+  }
+
+  if (workspace_bytes < sizeof(mld_v17b_sign_workspace)) {
+    return -1;
+  }
+
+  mld_v17b_tls_workspace = (mld_v17b_sign_workspace *)workspace;
+  return 0;
+}
+
+#define MLD_V17B_REQUIRE_WORKSPACE() \
+  do { \
+    if (mld_v17b_tls_workspace == 0) { \
+      return -1; \
+    } \
+  } while (0)
+
+#define MLD_V17B_ALLOC_MAT(name) \
+  MLD_V17B_REQUIRE_WORKSPACE(); \
+  mld_polymat *name = &mld_v17b_tls_workspace->mat
+
+#define MLD_V17B_FREE_MAT(name) \
+  do { (void)(name); } while (0)
+
+#define MLD_V17B_ALLOC_S1HAT(name) \
+  MLD_V17B_REQUIRE_WORKSPACE(); \
+  mld_sk_s1hat *name = &mld_v17b_tls_workspace->s1hat
+
+#define MLD_V17B_FREE_S1HAT(name) \
+  do { (void)(name); } while (0)
+
+#define MLD_V17B_ALLOC_S2HAT(name) \
+  MLD_V17B_REQUIRE_WORKSPACE(); \
+  mld_sk_s2hat *name = &mld_v17b_tls_workspace->s2hat
+
+#define MLD_V17B_FREE_S2HAT(name) \
+  do { (void)(name); } while (0)
+
+#define MLD_V17B_ALLOC_T0HAT(name) \
+  MLD_V17B_REQUIRE_WORKSPACE(); \
+  mld_sk_t0hat *name = &mld_v17b_tls_workspace->t0hat
+
+#define MLD_V17B_FREE_T0HAT(name) \
+  do { (void)(name); } while (0)
+
+#elif defined(MLD_CONFIG_EXPERIMENTAL_CALLER_MATRIX_WORKSPACE)
 typedef struct {
   MLD_ALIGN mld_polymat mat;
 } mld_v16_matrix_workspace;
@@ -183,27 +251,81 @@ int PQCP_MLDSA_NATIVE_MLDSA44_X86_64_v16_matrix_workspace_set(void *workspace, s
   return 0;
 }
 
-#define MLD_V16_ALLOC_MAT(name) \
+#define MLD_V17B_ALLOC_MAT(name) \
   mld_polymat *name = &mld_v16_tls_workspace->mat
 
-#define MLD_V16_FREE_MAT(name) \
+#define MLD_V17B_FREE_MAT(name) \
   do { (void)(name); } while (0)
+
+#define MLD_V17B_ALLOC_S1HAT(name) \
+  MLD_ALLOC(name, mld_sk_s1hat, 1, context)
+
+#define MLD_V17B_FREE_S1HAT(name) \
+  MLD_FREE(name, mld_sk_s1hat, 1, context)
+
+#define MLD_V17B_ALLOC_S2HAT(name) \
+  MLD_ALLOC(name, mld_sk_s2hat, 1, context)
+
+#define MLD_V17B_FREE_S2HAT(name) \
+  MLD_FREE(name, mld_sk_s2hat, 1, context)
+
+#define MLD_V17B_ALLOC_T0HAT(name) \
+  MLD_ALLOC(name, mld_sk_t0hat, 1, context)
+
+#define MLD_V17B_FREE_T0HAT(name) \
+  MLD_FREE(name, mld_sk_t0hat, 1, context)
 
 #elif defined(MLD_CONFIG_EXPERIMENTAL_STATIC_MATRIX_WORKSPACE)
 static MLD_ALIGN mld_polymat mld_v15_static_mat;
 
-#define MLD_V16_ALLOC_MAT(name) \
+#define MLD_V17B_ALLOC_MAT(name) \
   mld_polymat *name = &mld_v15_static_mat
 
-#define MLD_V16_FREE_MAT(name) \
+#define MLD_V17B_FREE_MAT(name) \
   do { (void)(name); } while (0)
 
+#define MLD_V17B_ALLOC_S1HAT(name) \
+  MLD_ALLOC(name, mld_sk_s1hat, 1, context)
+
+#define MLD_V17B_FREE_S1HAT(name) \
+  MLD_FREE(name, mld_sk_s1hat, 1, context)
+
+#define MLD_V17B_ALLOC_S2HAT(name) \
+  MLD_ALLOC(name, mld_sk_s2hat, 1, context)
+
+#define MLD_V17B_FREE_S2HAT(name) \
+  MLD_FREE(name, mld_sk_s2hat, 1, context)
+
+#define MLD_V17B_ALLOC_T0HAT(name) \
+  MLD_ALLOC(name, mld_sk_t0hat, 1, context)
+
+#define MLD_V17B_FREE_T0HAT(name) \
+  MLD_FREE(name, mld_sk_t0hat, 1, context)
+
 #else
-#define MLD_V16_ALLOC_MAT(name) \
+#define MLD_V17B_ALLOC_MAT(name) \
   MLD_ALLOC(name, mld_polymat, 1, context)
 
-#define MLD_V16_FREE_MAT(name) \
+#define MLD_V17B_FREE_MAT(name) \
   MLD_FREE(name, mld_polymat, 1, context)
+
+#define MLD_V17B_ALLOC_S1HAT(name) \
+  MLD_ALLOC(name, mld_sk_s1hat, 1, context)
+
+#define MLD_V17B_FREE_S1HAT(name) \
+  MLD_FREE(name, mld_sk_s1hat, 1, context)
+
+#define MLD_V17B_ALLOC_S2HAT(name) \
+  MLD_ALLOC(name, mld_sk_s2hat, 1, context)
+
+#define MLD_V17B_FREE_S2HAT(name) \
+  MLD_FREE(name, mld_sk_s2hat, 1, context)
+
+#define MLD_V17B_ALLOC_T0HAT(name) \
+  MLD_ALLOC(name, mld_sk_t0hat, 1, context)
+
+#define MLD_V17B_FREE_T0HAT(name) \
+  MLD_FREE(name, mld_sk_t0hat, 1, context)
 #endif
 
 static void mld_sample_s1_s2(mld_polyvecl *s1, mld_polyveck *s2,
@@ -304,7 +426,7 @@ __contract__(
 {
   unsigned int k;
   int ret;
-  MLD_V16_ALLOC_MAT(mat);
+  MLD_V17B_ALLOC_MAT(mat);
   MLD_ALLOC(t0k, mld_poly, 1, context);
   MLD_ALLOC(t1k, mld_poly, 1, context);
 
@@ -363,7 +485,7 @@ cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(t1k, mld_poly, 1, context);
   MLD_FREE(t0k, mld_poly, 1, context);
-  MLD_V16_FREE_MAT(mat);
+  MLD_V17B_FREE_MAT(mat);
   return ret;
 }
 
@@ -895,10 +1017,10 @@ int mld_sign_signature_internal(uint8_t sig[MLDSA_CRYPTO_BYTES], size_t *siglen,
   const uint16_t nonce_limit = mld_get_max_signing_attempts();
   MLD_ALLOC(seedbuf, uint8_t,
             2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES + 2 * MLDSA_CRHBYTES, context);
-  MLD_V16_ALLOC_MAT(mat);
-  MLD_ALLOC(s1hat, mld_sk_s1hat, 1, context);
-  MLD_ALLOC(t0hat, mld_sk_t0hat, 1, context);
-  MLD_ALLOC(s2hat, mld_sk_s2hat, 1, context);
+  MLD_V17B_ALLOC_MAT(mat);
+  MLD_V17B_ALLOC_S1HAT(s1hat);
+  MLD_V17B_ALLOC_T0HAT(t0hat);
+  MLD_V17B_ALLOC_S2HAT(s2hat);
 
   if (seedbuf == NULL || mat == NULL || s1hat == NULL || t0hat == NULL ||
       s2hat == NULL)
@@ -998,10 +1120,10 @@ cleanup:
   }
 
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
-  MLD_FREE(s2hat, mld_sk_s2hat, 1, context);
-  MLD_FREE(t0hat, mld_sk_t0hat, 1, context);
-  MLD_FREE(s1hat, mld_sk_s1hat, 1, context);
-  MLD_V16_FREE_MAT(mat);
+  MLD_V17B_FREE_S2HAT(s2hat);
+  MLD_V17B_FREE_T0HAT(t0hat);
+  MLD_V17B_FREE_S1HAT(s1hat);
+  MLD_V17B_FREE_MAT(mat);
   MLD_FREE(seedbuf, uint8_t,
            2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES + 2 * MLDSA_CRHBYTES, context);
   return ret;
@@ -1160,7 +1282,7 @@ int mld_sign_verify_internal(const uint8_t *sig, size_t siglen,
   MLD_ALLOC(c2, uint8_t, MLDSA_CTILDEBYTES, context);
   MLD_ALLOC(z, mld_polyvecl, 1, context);
   MLD_ALLOC(cp, mld_poly, 1, context);
-  MLD_V16_ALLOC_MAT(mat);
+  MLD_V17B_ALLOC_MAT(mat);
   MLD_ALLOC(w1, mld_poly, 1, context);
   MLD_ALLOC(tmp, mld_poly, 1, context);
 
@@ -1265,7 +1387,7 @@ cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(tmp, mld_poly, 1, context);
   MLD_FREE(w1, mld_poly, 1, context);
-  MLD_V16_FREE_MAT(mat);
+  MLD_V17B_FREE_MAT(mat);
   MLD_FREE(cp, mld_poly, 1, context);
   MLD_FREE(z, mld_polyvecl, 1, context);
   MLD_FREE(c2, uint8_t, MLDSA_CTILDEBYTES, context);

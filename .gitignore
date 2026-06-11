@@ -191,3 +191,23 @@ experiments/layer3-v17a-lifetime-map/*.csv
 experiments/layer3-v17a-lifetime-map/*.txt
 experiments/layer3-v17a-lifetime-map/*.diff
 experiments/layer3-v17a-lifetime-map/*.snapshot
+
+# Layer 3 v17b build outputs
+build-v17b-full-sign-workspace/
+
+# Layer 3 v17b profiler binaries
+experiments/layer3-v17b-full-sign-workspace/v17b_baseline_profiler
+experiments/layer3-v17b-full-sign-workspace/v17b_reduce_ram_profiler
+experiments/layer3-v17b-full-sign-workspace/v17b_static_matrix_profiler
+experiments/layer3-v17b-full-sign-workspace/v17b_caller_matrix_profiler
+experiments/layer3-v17b-full-sign-workspace/v17b_full_sign_profiler
+
+# Layer 3 v17b generated results
+layer3-results/v17b_*.csv
+layer3-results/v17b_*.md
+
+# Layer 3 v17b local backups/scratch
+experiments/layer3-v17b-full-sign-workspace/*.before_v17b
+experiments/layer3-v17b-full-sign-workspace/*.csv
+experiments/layer3-v17b-full-sign-workspace/*.txt
+experiments/layer3-v17b-full-sign-workspace/*.diff
