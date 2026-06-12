@@ -173,6 +173,18 @@ typedef struct {
 
 static _Thread_local mld_v17b_sign_workspace *mld_v17b_tls_workspace;
 
+#if defined(MLD_CONFIG_EXPERIMENTAL_WORKSPACE_SANITIZE)
+static void mld_v18_cleanse(void *ptr, size_t len) {
+  volatile uint8_t *p = (volatile uint8_t *)ptr;
+
+  while (len > 0) {
+    *p++ = 0;
+    len--;
+  }
+}
+#endif
+
+
 size_t PQCP_MLDSA_NATIVE_MLDSA44_C_v17b_sign_workspace_bytes(void) {
   return sizeof(mld_v17b_sign_workspace);
 }
@@ -202,8 +214,18 @@ int PQCP_MLDSA_NATIVE_MLDSA44_C_v17b_sign_workspace_set(void *workspace, size_t 
   MLD_V17B_REQUIRE_WORKSPACE(); \
   mld_polymat *name = &mld_v17b_tls_workspace->mat
 
+#if defined(MLD_CONFIG_EXPERIMENTAL_WORKSPACE_SANITIZE)
+#define MLD_V17B_FREE_MAT(name) \
+  do { \
+    (void)(name); \
+    if (mld_v17b_tls_workspace != 0) { \
+      mld_v18_cleanse(mld_v17b_tls_workspace, sizeof(*mld_v17b_tls_workspace)); \
+    } \
+  } while (0)
+#else
 #define MLD_V17B_FREE_MAT(name) \
   do { (void)(name); } while (0)
+#endif
 
 #define MLD_V17B_ALLOC_S1HAT(name) \
   MLD_V17B_REQUIRE_WORKSPACE(); \

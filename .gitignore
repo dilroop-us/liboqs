@@ -211,3 +211,21 @@ experiments/layer3-v17b-full-sign-workspace/*.before_v17b
 experiments/layer3-v17b-full-sign-workspace/*.csv
 experiments/layer3-v17b-full-sign-workspace/*.txt
 experiments/layer3-v17b-full-sign-workspace/*.diff
+
+# Layer 3 v18 build outputs
+build-v18-workspace-accounting-sanitize/
+
+# Layer 3 v18 profiler/helper binaries
+experiments/layer3-v18-workspace-accounting-sanitize/v18_workspace_sanitize_profiler
+experiments/layer3-v18-workspace-accounting-sanitize/v18_bytes_v16
+experiments/layer3-v18-workspace-accounting-sanitize/v18_bytes_v17b
+experiments/layer3-v18-workspace-accounting-sanitize/v18_bytes_v18
+
+# Layer 3 v18 generated results
+layer3-results/v18_*.csv
+layer3-results/v18_*.md
+
+# Layer 3 v18 local scratch files
+experiments/layer3-v18-workspace-accounting-sanitize/*.csv
+experiments/layer3-v18-workspace-accounting-sanitize/*.txt
+experiments/layer3-v18-workspace-accounting-sanitize/*.diff
