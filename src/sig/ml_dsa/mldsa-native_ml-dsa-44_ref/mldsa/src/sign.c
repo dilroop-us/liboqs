@@ -842,6 +842,70 @@ __contract__(
  *         - MLD_ERR_OUT_OF_MEMORY: If MLD_CONFIG_CUSTOM_ALLOC_FREE is used and
  *           an allocation via MLD_CUSTOM_ALLOC returned NULL.
  */
+
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_ATTEMPT_WORKSPACE)
+
+typedef union {
+  MLD_ALIGN mld_polyveck w1;
+  MLD_ALIGN mld_polyvecl tmp;
+} mld_v19b_w1tmp_u;
+
+typedef struct {
+  MLD_ALIGN mld_yvec y;
+  MLD_ALIGN mld_v19b_w1tmp_u w1tmp;
+  MLD_ALIGN mld_polyveck w0;
+  MLD_ALIGN mld_poly z;
+  MLD_ALIGN mld_poly cp;
+  MLD_ALIGN mld_poly t;
+  uint8_t challenge_bytes[MLDSA_CTILDEBYTES];
+} mld_v19b_attempt_workspace;
+
+static _Thread_local mld_v19b_attempt_workspace *mld_v19b_tls_attempt_workspace;
+
+size_t PQCP_MLDSA_NATIVE_MLDSA44_C_v19b_attempt_workspace_bytes(void) {
+  return sizeof(mld_v19b_attempt_workspace);
+}
+
+int PQCP_MLDSA_NATIVE_MLDSA44_C_v19b_attempt_workspace_set(void *workspace, size_t workspace_bytes) {
+  if (workspace == 0 || workspace_bytes < sizeof(mld_v19b_attempt_workspace)) {
+    return -1;
+  }
+
+  mld_v19b_tls_attempt_workspace = (mld_v19b_attempt_workspace *)workspace;
+  return 0;
+}
+
+#define MLD_V19B_REQUIRE_ATTEMPT_WORKSPACE() \
+  do { \
+    if (mld_v19b_tls_attempt_workspace == 0) { \
+      return MLD_ERR_OUT_OF_MEMORY; \
+    } \
+  } while (0)
+
+#if defined(MLD_CONFIG_EXPERIMENTAL_WORKSPACE_SANITIZE)
+static void mld_v19b_cleanse(void *ptr, size_t len) {
+  volatile uint8_t *p = (volatile uint8_t *)ptr;
+
+  while (len > 0) {
+    *p++ = 0;
+    len--;
+  }
+}
+
+#define MLD_V19B_CLEAN_ATTEMPT_WORKSPACE() \
+  do { \
+    if (mld_v19b_tls_attempt_workspace != 0) { \
+      mld_v19b_cleanse(mld_v19b_tls_attempt_workspace, \
+                       sizeof(*mld_v19b_tls_attempt_workspace)); \
+    } \
+  } while (0)
+#else
+#define MLD_V19B_CLEAN_ATTEMPT_WORKSPACE() \
+  do { } while (0)
+#endif
+
+#endif /* MLD_CONFIG_EXPERIMENTAL_CALLER_ATTEMPT_WORKSPACE */
+
 MLD_MUST_CHECK_RETURN_VALUE
 static int mld_attempt_signature_generation(
     uint8_t sig[MLDSA_CRYPTO_BYTES], const uint8_t *mu,
@@ -881,14 +945,26 @@ __contract__(
   uint32_t w0_invalid, h_invalid;
   int ret;
 
+#if !defined(MLD_CONFIG_EXPERIMENTAL_CALLER_ATTEMPT_WORKSPACE)
   typedef union
   {
     mld_polyveck w1;
     mld_polyvecl tmp;
   } w1tmp_u;
+#endif
   mld_polyveck *w1;
   mld_polyvecl *tmp;
 
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_ATTEMPT_WORKSPACE)
+  MLD_V19B_REQUIRE_ATTEMPT_WORKSPACE();
+  uint8_t *challenge_bytes = mld_v19b_tls_attempt_workspace->challenge_bytes;
+  mld_yvec *y = &mld_v19b_tls_attempt_workspace->y;
+  mld_poly *z = &mld_v19b_tls_attempt_workspace->z;
+  mld_v19b_w1tmp_u *w1tmp = &mld_v19b_tls_attempt_workspace->w1tmp;
+  mld_polyveck *w0 = &mld_v19b_tls_attempt_workspace->w0;
+  mld_poly *cp = &mld_v19b_tls_attempt_workspace->cp;
+  mld_poly *t = &mld_v19b_tls_attempt_workspace->t;
+#else
   MLD_ALLOC(challenge_bytes, uint8_t, MLDSA_CTILDEBYTES, context);
   MLD_ALLOC(y, mld_yvec, 1, context);
   MLD_ALLOC(z, mld_poly, 1, context);
@@ -896,6 +972,7 @@ __contract__(
   MLD_ALLOC(w0, mld_polyveck, 1, context);
   MLD_ALLOC(cp, mld_poly, 1, context);
   MLD_ALLOC(t, mld_poly, 1, context);
+#endif
 
   if (challenge_bytes == NULL || y == NULL || z == NULL || w1tmp == NULL ||
       w0 == NULL || cp == NULL || t == NULL)
@@ -1013,6 +1090,9 @@ __contract__(
 
 cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_ATTEMPT_WORKSPACE)
+  MLD_V19B_CLEAN_ATTEMPT_WORKSPACE();
+#else
   MLD_FREE(t, mld_poly, 1, context);
   MLD_FREE(cp, mld_poly, 1, context);
   MLD_FREE(w0, mld_polyveck, 1, context);
@@ -1020,6 +1100,7 @@ cleanup:
   MLD_FREE(z, mld_poly, 1, context);
   MLD_FREE(y, mld_yvec, 1, context);
   MLD_FREE(challenge_bytes, uint8_t, MLDSA_CTILDEBYTES, context);
+#endif
 
   return ret;
 }

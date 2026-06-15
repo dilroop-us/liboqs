@@ -242,3 +242,20 @@ experiments/layer3-v19a-attempt-lifetime-map/*.csv
 experiments/layer3-v19a-attempt-lifetime-map/*.txt
 experiments/layer3-v19a-attempt-lifetime-map/*.diff
 experiments/layer3-v19a-attempt-lifetime-map/*.snapshot
+
+# Layer 3 v19b build outputs
+build-v19b-attempt-workspace/
+
+# Layer 3 v19b profiler/helper binaries
+experiments/layer3-v19b-attempt-workspace/v19b_attempt_workspace_profiler
+experiments/layer3-v19b-attempt-workspace/v19b_bytes
+
+# Layer 3 v19b generated results
+layer3-results/v19b_*.csv
+layer3-results/v19b_*.md
+
+# Layer 3 v19b local backups/scratch
+experiments/layer3-v19b-attempt-workspace/*.before_v19b
+experiments/layer3-v19b-attempt-workspace/*.csv
+experiments/layer3-v19b-attempt-workspace/*.txt
+experiments/layer3-v19b-attempt-workspace/*.diff
