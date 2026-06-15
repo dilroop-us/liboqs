@@ -229,3 +229,16 @@ layer3-results/v18_*.md
 experiments/layer3-v18-workspace-accounting-sanitize/*.csv
 experiments/layer3-v18-workspace-accounting-sanitize/*.txt
 experiments/layer3-v18-workspace-accounting-sanitize/*.diff
+
+# Layer 3 v19a generated result files
+layer3-results/v19a_*.csv
+layer3-results/v19a_*.md
+
+# Layer 3 v19a no-inline diagnostic build
+build-v19a-noinline-attribution/
+
+# Layer 3 v19a local scratch files
+experiments/layer3-v19a-attempt-lifetime-map/*.csv
+experiments/layer3-v19a-attempt-lifetime-map/*.txt
+experiments/layer3-v19a-attempt-lifetime-map/*.diff
+experiments/layer3-v19a-attempt-lifetime-map/*.snapshot
