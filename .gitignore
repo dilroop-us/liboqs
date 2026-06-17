@@ -275,3 +275,24 @@ layer3-results/v20_*.md
 experiments/layer3-v20-sanitized-attempt-workspace/*.csv
 experiments/layer3-v20-sanitized-attempt-workspace/*.txt
 experiments/layer3-v20-sanitized-attempt-workspace/*.diff
+
+# Local patch backups
+*.before_v19b
+*.before_v21
+
+# Layer 3 v21 build outputs
+build-v21-unified-sign-workspace/
+
+# Layer 3 v21 profiler/helper binaries
+experiments/layer3-v21-unified-sign-workspace/v21_unified_workspace_profiler
+experiments/layer3-v21-unified-sign-workspace/v21_bytes
+
+# Layer 3 v21 generated results
+layer3-results/v21_*.csv
+layer3-results/v21_*.md
+
+# Layer 3 v21 local backups/scratch
+experiments/layer3-v21-unified-sign-workspace/*.before_v21
+experiments/layer3-v21-unified-sign-workspace/*.csv
+experiments/layer3-v21-unified-sign-workspace/*.txt
+experiments/layer3-v21-unified-sign-workspace/*.diff
