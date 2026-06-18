@@ -296,3 +296,20 @@ experiments/layer3-v21-unified-sign-workspace/*.before_v21
 experiments/layer3-v21-unified-sign-workspace/*.csv
 experiments/layer3-v21-unified-sign-workspace/*.txt
 experiments/layer3-v21-unified-sign-workspace/*.diff
+
+# Layer 3 v22b build outputs
+build-v22b-verify-workspace/
+
+# Layer 3 v22b profiler/helper binaries
+experiments/layer3-v22b-verify-workspace/v22b_verify_workspace_profiler
+experiments/layer3-v22b-verify-workspace/v22b_bytes
+
+# Layer 3 v22b generated results
+layer3-results/v22b_*.csv
+layer3-results/v22b_*.md
+
+# Layer 3 v22b local backups/scratch
+experiments/layer3-v22b-verify-workspace/*.before_v22b
+experiments/layer3-v22b-verify-workspace/*.csv
+experiments/layer3-v22b-verify-workspace/*.txt
+experiments/layer3-v22b-verify-workspace/*.diff
