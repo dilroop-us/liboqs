@@ -313,3 +313,17 @@ experiments/layer3-v22b-verify-workspace/*.before_v22b
 experiments/layer3-v22b-verify-workspace/*.csv
 experiments/layer3-v22b-verify-workspace/*.txt
 experiments/layer3-v22b-verify-workspace/*.diff
+
+# Layer 3 v23a build outputs
+build-v23a-keygen-lifetime-map/
+build-v23a-keygen-lifetime-map-noinline/
+
+# Layer 3 v23a generated results
+layer3-results/v23a_*.csv
+layer3-results/v23a_*.md
+layer3-results/v23a_*.txt
+
+# Layer 3 v23a scratch files
+experiments/layer3-v23a-keygen-lifetime-map/*.csv
+experiments/layer3-v23a-keygen-lifetime-map/*.txt
+experiments/layer3-v23a-keygen-lifetime-map/*.diff
