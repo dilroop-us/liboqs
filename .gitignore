@@ -327,3 +327,20 @@ layer3-results/v23a_*.txt
 experiments/layer3-v23a-keygen-lifetime-map/*.csv
 experiments/layer3-v23a-keygen-lifetime-map/*.txt
 experiments/layer3-v23a-keygen-lifetime-map/*.diff
+
+# Layer 3 v23b build outputs
+build-v23b-keygen-workspace/
+
+# Layer 3 v23b profiler/helper binaries
+experiments/layer3-v23b-keygen-workspace/v23b_keygen_workspace_profiler
+experiments/layer3-v23b-keygen-workspace/v23b_bytes
+
+# Layer 3 v23b generated results
+layer3-results/v23b_*.csv
+layer3-results/v23b_*.md
+
+# Layer 3 v23b local backups/scratch
+experiments/layer3-v23b-keygen-workspace/*.before_v23b
+experiments/layer3-v23b-keygen-workspace/*.csv
+experiments/layer3-v23b-keygen-workspace/*.txt
+experiments/layer3-v23b-keygen-workspace/*.diff

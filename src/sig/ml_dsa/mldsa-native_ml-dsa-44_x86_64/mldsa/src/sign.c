@@ -513,6 +513,83 @@ cleanup:
 
 MLD_MUST_CHECK_RETURN_VALUE
 MLD_EXTERNAL_API
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_KEYGEN_WORKSPACE)
+
+/*
+ * v23b caller-provided keygen/provisioning workspace.
+ *
+ * v23a showed keypair_internal and pk_from_sk are local-buffer dominated.
+ * v23b moves those buffers out of function stack and into explicit caller-owned
+ * workspace.
+ */
+typedef struct {
+  MLD_ALIGN mld_polyvecl s1;
+  MLD_ALIGN mld_polyveck s2;
+
+  MLD_ALIGN uint8_t t0_packed[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES];
+
+  MLD_ALIGN uint8_t seedbuf[2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES];
+  MLD_ALIGN uint8_t inbuf[MLDSA_SEEDBYTES + 2];
+
+  MLD_ALIGN uint8_t tr[MLDSA_TRBYTES];
+  MLD_ALIGN uint8_t tr_computed[MLDSA_TRBYTES];
+
+  MLD_ALIGN uint8_t rho[MLDSA_SEEDBYTES];
+  MLD_ALIGN uint8_t key[MLDSA_SEEDBYTES];
+} mld_v23b_keygen_workspace;
+
+static _Thread_local mld_v23b_keygen_workspace *mld_v23b_tls_keygen_workspace;
+
+size_t PQCP_MLDSA_NATIVE_MLDSA44_X86_64_v23b_keygen_workspace_bytes(void) {
+  return sizeof(mld_v23b_keygen_workspace);
+}
+
+int PQCP_MLDSA_NATIVE_MLDSA44_X86_64_v23b_keygen_workspace_set(void *workspace, size_t workspace_bytes) {
+  if (workspace == 0 || workspace_bytes < sizeof(mld_v23b_keygen_workspace)) {
+    return -1;
+  }
+
+  if ((((uintptr_t)workspace) & (uintptr_t)63u) != 0u) {
+    return -2;
+  }
+
+  mld_v23b_tls_keygen_workspace = (mld_v23b_keygen_workspace *)workspace;
+  return 0;
+}
+
+#define MLD_V23B_REQUIRE_KEYGEN_WORKSPACE() \
+  do { \
+    if (mld_v23b_tls_keygen_workspace == 0) { \
+      return MLD_ERR_OUT_OF_MEMORY; \
+    } \
+  } while (0)
+
+#if defined(MLD_CONFIG_EXPERIMENTAL_WORKSPACE_SANITIZE)
+static void mld_v23b_cleanse(void *ptr, size_t len) {
+  volatile uint8_t *p = (volatile uint8_t *)ptr;
+
+  while (len > 0) {
+    *p++ = 0;
+    len--;
+  }
+}
+
+#define MLD_V23B_CLEAN_KEYGEN_WORKSPACE() \
+  do { \
+    if (mld_v23b_tls_keygen_workspace != 0) { \
+      mld_v23b_cleanse(mld_v23b_tls_keygen_workspace, \
+                       sizeof(*mld_v23b_tls_keygen_workspace)); \
+    } \
+  } while (0)
+#else
+#define MLD_V23B_CLEAN_KEYGEN_WORKSPACE() \
+  do { \
+  } while (0)
+#endif
+
+#endif /* MLD_CONFIG_EXPERIMENTAL_CALLER_KEYGEN_WORKSPACE */
+
+
 int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
                               uint8_t sk[MLDSA_CRYPTO_SECRETKEYBYTES],
                               const uint8_t seed[MLDSA_SEEDBYTES],
@@ -521,11 +598,21 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   int ret;
   const uint8_t *rho, *rhoprime, *key;
 
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_KEYGEN_WORKSPACE)
+  MLD_V23B_REQUIRE_KEYGEN_WORKSPACE();
+
+  uint8_t *seedbuf = mld_v23b_tls_keygen_workspace->seedbuf;
+  uint8_t *inbuf = mld_v23b_tls_keygen_workspace->inbuf;
+  uint8_t *tr = mld_v23b_tls_keygen_workspace->tr;
+  mld_polyvecl *s1 = &mld_v23b_tls_keygen_workspace->s1;
+  mld_polyveck *s2 = &mld_v23b_tls_keygen_workspace->s2;
+#else
   MLD_ALLOC(seedbuf, uint8_t, 2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES, context);
   MLD_ALLOC(inbuf, uint8_t, MLDSA_SEEDBYTES + 2, context);
   MLD_ALLOC(tr, uint8_t, MLDSA_TRBYTES, context);
   MLD_ALLOC(s1, mld_polyvecl, 1, context);
   MLD_ALLOC(s2, mld_polyveck, 1, context);
+#endif
 
   if (seedbuf == NULL || inbuf == NULL || tr == NULL || s1 == NULL ||
       s2 == NULL)
@@ -582,11 +669,15 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 
 cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_KEYGEN_WORKSPACE)
+  MLD_V23B_CLEAN_KEYGEN_WORKSPACE();
+#else
   MLD_FREE(s2, mld_polyveck, 1, context);
   MLD_FREE(s1, mld_polyvecl, 1, context);
   MLD_FREE(tr, uint8_t, MLDSA_TRBYTES, context);
   MLD_FREE(inbuf, uint8_t, MLDSA_SEEDBYTES + 2, context);
   MLD_FREE(seedbuf, uint8_t, 2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES, context);
+#endif
 
   if (ret != 0)
   {
@@ -1033,6 +1124,7 @@ static void mld_v22b_cleanse(void *ptr, size_t len) {
 #endif
 
 #endif /* MLD_CONFIG_EXPERIMENTAL_CALLER_VERIFY_WORKSPACE */
+
 
 MLD_MUST_CHECK_RETURN_VALUE
 static int mld_attempt_signature_generation(
@@ -1995,6 +2087,17 @@ int mld_sign_pk_from_sk(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 {
   uint8_t check, cmp0, cmp1, chk1, chk2;
   int ret;
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_KEYGEN_WORKSPACE)
+  MLD_V23B_REQUIRE_KEYGEN_WORKSPACE();
+
+  uint8_t *rho = mld_v23b_tls_keygen_workspace->rho;
+  uint8_t *tr = mld_v23b_tls_keygen_workspace->tr;
+  uint8_t *tr_computed = mld_v23b_tls_keygen_workspace->tr_computed;
+  uint8_t *key = mld_v23b_tls_keygen_workspace->key;
+  mld_polyvecl *s1 = &mld_v23b_tls_keygen_workspace->s1;
+  mld_polyveck *s2 = &mld_v23b_tls_keygen_workspace->s2;
+  uint8_t *t0_packed = mld_v23b_tls_keygen_workspace->t0_packed;
+#else
   MLD_ALLOC(rho, uint8_t, MLDSA_SEEDBYTES, context);
   MLD_ALLOC(tr, uint8_t, MLDSA_TRBYTES, context);
   MLD_ALLOC(tr_computed, uint8_t, MLDSA_TRBYTES, context);
@@ -2002,6 +2105,7 @@ int mld_sign_pk_from_sk(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   MLD_ALLOC(s1, mld_polyvecl, 1, context);
   MLD_ALLOC(s2, mld_polyveck, 1, context);
   MLD_ALLOC(t0_packed, uint8_t, MLDSA_K *MLDSA_POLYT0_PACKEDBYTES, context);
+#endif
 
   if (rho == NULL || tr == NULL || tr_computed == NULL || key == NULL ||
       s1 == NULL || s2 == NULL || t0_packed == NULL)
@@ -2067,6 +2171,9 @@ cleanup:
   MLD_CT_TESTING_DECLASSIFY(pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
 
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
+#if defined(MLD_CONFIG_EXPERIMENTAL_CALLER_KEYGEN_WORKSPACE)
+  MLD_V23B_CLEAN_KEYGEN_WORKSPACE();
+#else
   MLD_FREE(t0_packed, uint8_t, MLDSA_K *MLDSA_POLYT0_PACKEDBYTES, context);
   MLD_FREE(s2, mld_polyveck, 1, context);
   MLD_FREE(s1, mld_polyvecl, 1, context);
@@ -2074,6 +2181,7 @@ cleanup:
   MLD_FREE(tr_computed, uint8_t, MLDSA_TRBYTES, context);
   MLD_FREE(tr, uint8_t, MLDSA_TRBYTES, context);
   MLD_FREE(rho, uint8_t, MLDSA_SEEDBYTES, context);
+#endif
 
   return ret;
 }
