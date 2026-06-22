@@ -363,3 +363,19 @@ layer3-results/v24a_*.md
 experiments/layer3-v24a-compact-workspace-layout/*.csv
 experiments/layer3-v24a-compact-workspace-layout/*.txt
 experiments/layer3-v24a-compact-workspace-layout/*.diff
+
+# Layer 3 v24b build outputs
+build-v24b-compact-lifecycle-workspace/
+
+# Layer 3 v24b helper/profiler binaries
+experiments/layer3-v24b-compact-lifecycle-workspace/v24b_compact_lifecycle_workspace_profiler
+experiments/layer3-v24b-compact-lifecycle-workspace/v24b_bytes
+
+# Layer 3 v24b generated result files
+layer3-results/v24b_*.csv
+layer3-results/v24b_*.md
+
+# Layer 3 v24b scratch files
+experiments/layer3-v24b-compact-lifecycle-workspace/*.csv
+experiments/layer3-v24b-compact-lifecycle-workspace/*.txt
+experiments/layer3-v24b-compact-lifecycle-workspace/*.diff
