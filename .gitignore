@@ -344,3 +344,22 @@ experiments/layer3-v23b-keygen-workspace/*.before_v23b
 experiments/layer3-v23b-keygen-workspace/*.csv
 experiments/layer3-v23b-keygen-workspace/*.txt
 experiments/layer3-v23b-keygen-workspace/*.diff
+
+# Layer 3 local source backups
+src/sig/ml_dsa/**/sign.c.before_v22b
+src/sig/ml_dsa/**/sign.c.before_v23b
+src/sig/ml_dsa/**/*.before_v22b
+src/sig/ml_dsa/**/*.before_v23b
+src/sig/ml_dsa/**/*.before_v24b
+
+# Layer 3 v24a helper binaries
+experiments/layer3-v24a-compact-workspace-layout/v24a_current_workspace_symbols
+
+# Layer 3 v24a generated result files
+layer3-results/v24a_*.csv
+layer3-results/v24a_*.md
+
+# Layer 3 v24a scratch files
+experiments/layer3-v24a-compact-workspace-layout/*.csv
+experiments/layer3-v24a-compact-workspace-layout/*.txt
+experiments/layer3-v24a-compact-workspace-layout/*.diff
