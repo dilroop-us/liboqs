@@ -379,3 +379,18 @@ layer3-results/v24b_*.md
 experiments/layer3-v24b-compact-lifecycle-workspace/*.csv
 experiments/layer3-v24b-compact-lifecycle-workspace/*.txt
 experiments/layer3-v24b-compact-lifecycle-workspace/*.diff
+
+# Layer 3 v25a build outputs
+build-v25a-mlkem-only-stack-lifetime/
+build-v25a-combined-stack-lifetime/
+build-v25a-mlkem-stack-lifetime-noinline/
+
+# Layer 3 v25a generated result files
+layer3-results/v25a_*.csv
+layer3-results/v25a_*.md
+layer3-results/v25a_*.txt
+
+# Layer 3 v25a scratch files
+experiments/layer3-v25a-mlkem-stack-lifetime/*.csv
+experiments/layer3-v25a-mlkem-stack-lifetime/*.txt
+experiments/layer3-v25a-mlkem-stack-lifetime/*.diff
