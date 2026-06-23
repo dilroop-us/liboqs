@@ -394,3 +394,19 @@ layer3-results/v25a_*.txt
 experiments/layer3-v25a-mlkem-stack-lifetime/*.csv
 experiments/layer3-v25a-mlkem-stack-lifetime/*.txt
 experiments/layer3-v25a-mlkem-stack-lifetime/*.diff
+
+# Layer 3 v25b build outputs
+build-v25b-mlkem-only-baseline/
+build-v25b-combined-baseline/
+
+# Layer 3 v25b generated profiler binaries
+layer3-results/v25b_*_mlkem_profiler
+
+# Layer 3 v25b generated result files
+layer3-results/v25b_*.csv
+layer3-results/v25b_*.md
+
+# Layer 3 v25b scratch files
+experiments/layer3-v25b-mlkem-baseline-profiler/*.csv
+experiments/layer3-v25b-mlkem-baseline-profiler/*.txt
+experiments/layer3-v25b-mlkem-baseline-profiler/*.diff
