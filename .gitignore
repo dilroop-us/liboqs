@@ -410,3 +410,23 @@ layer3-results/v25b_*.md
 experiments/layer3-v25b-mlkem-baseline-profiler/*.csv
 experiments/layer3-v25b-mlkem-baseline-profiler/*.txt
 experiments/layer3-v25b-mlkem-baseline-profiler/*.diff
+
+# Layer 3 v26 build outputs
+build-v26-mlkem-enc-workspace/
+
+# Layer 3 v26 generated profiler binaries
+layer3-results/v26_*_profiler
+
+# Layer 3 v26 generated result files
+layer3-results/v26_*.csv
+layer3-results/v26_*.md
+layer3-results/v26_*.log
+
+# Layer 3 v26 source backups
+src/kem/ml_kem/mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.before_v26
+src/kem/ml_kem/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.before_v26
+
+# Layer 3 v26 scratch files
+experiments/layer3-v26-mlkem-enc-workspace/*.csv
+experiments/layer3-v26-mlkem-enc-workspace/*.txt
+experiments/layer3-v26-mlkem-enc-workspace/*.diff

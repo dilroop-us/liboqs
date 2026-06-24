@@ -469,6 +469,62 @@ cleanup:
  *            - We include buffer zeroization.
  */
 MLK_INTERNAL_API
+
+#if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_ENC_WORKSPACE)
+
+#define MLK_V26_WORKSPACE_ALIGN ((size_t)64)
+
+#if defined(MLK_ALIGN)
+#define MLK_V26_ALIGN_FIELD MLK_ALIGN
+#elif defined(MLKEM_ALIGN)
+#define MLK_V26_ALIGN_FIELD MLKEM_ALIGN
+#else
+#define MLK_V26_ALIGN_FIELD
+#endif
+
+typedef struct {
+    MLK_V26_ALIGN_FIELD mlk_polymat at;
+    MLK_V26_ALIGN_FIELD mlk_polyvec sp;
+    MLK_V26_ALIGN_FIELD mlk_polyvec pkpv;
+    MLK_V26_ALIGN_FIELD mlk_polyvec ep;
+    MLK_V26_ALIGN_FIELD mlk_polyvec b;
+    MLK_V26_ALIGN_FIELD mlk_polyvec_mulcache sp_cache;
+    MLK_V26_ALIGN_FIELD mlk_poly v;
+    MLK_V26_ALIGN_FIELD mlk_poly k;
+    MLK_V26_ALIGN_FIELD mlk_poly epp;
+    uint8_t seed[MLKEM_SYMBYTES];
+} mlk_v26_enc_workspace;
+
+static _Thread_local mlk_v26_enc_workspace *mlk_v26_tls_enc_workspace;
+
+size_t PQCP_MLKEM_NATIVE_MLKEM768_C_v26_enc_workspace_bytes(void) {
+    return sizeof(mlk_v26_enc_workspace);
+}
+
+int PQCP_MLKEM_NATIVE_MLKEM768_C_v26_enc_workspace_set(void *workspace, size_t workspace_bytes) {
+    if (workspace == 0 || workspace_bytes < sizeof(mlk_v26_enc_workspace)) {
+        return -1;
+    }
+
+    if (((size_t)workspace & (MLK_V26_WORKSPACE_ALIGN - 1u)) != 0u) {
+        return -2;
+    }
+
+    mlk_v26_tls_enc_workspace = (mlk_v26_enc_workspace *)workspace;
+    return 0;
+}
+
+#define MLK_V26_REQUIRE_ENC_WORKSPACE()          \
+    do {                                       \
+        if (mlk_v26_tls_enc_workspace == 0) {  \
+            return -1;                          \
+        }                                      \
+    } while (0)
+
+#define MLK_V26_CLEAN_ENC_WORKSPACE() do { } while (0)
+
+#endif /* MLK_CONFIG_EXPERIMENTAL_CALLER_ENC_WORKSPACE */
+
 int mlk_indcpa_enc(uint8_t c[MLKEM_INDCPA_BYTES],
                    const uint8_t m[MLKEM_INDCPA_MSGBYTES],
                    const uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
@@ -476,6 +532,20 @@ int mlk_indcpa_enc(uint8_t c[MLKEM_INDCPA_BYTES],
                    MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
 {
   int ret = 0;
+  #if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_ENC_WORKSPACE)
+  MLK_V26_REQUIRE_ENC_WORKSPACE();
+
+  uint8_t *seed = mlk_v26_tls_enc_workspace->seed;
+  mlk_polymat *at = &mlk_v26_tls_enc_workspace->at;
+  mlk_polyvec *sp = &mlk_v26_tls_enc_workspace->sp;
+  mlk_polyvec *pkpv = &mlk_v26_tls_enc_workspace->pkpv;
+  mlk_polyvec *ep = &mlk_v26_tls_enc_workspace->ep;
+  mlk_polyvec *b = &mlk_v26_tls_enc_workspace->b;
+  mlk_poly *v = &mlk_v26_tls_enc_workspace->v;
+  mlk_poly *k = &mlk_v26_tls_enc_workspace->k;
+  mlk_poly *epp = &mlk_v26_tls_enc_workspace->epp;
+  mlk_polyvec_mulcache *sp_cache = &mlk_v26_tls_enc_workspace->sp_cache;
+  #else
   MLK_ALLOC(seed, uint8_t, MLKEM_SYMBYTES, context);
   MLK_ALLOC(at, mlk_polymat, 1, context);
   MLK_ALLOC(sp, mlk_polyvec, 1, context);
@@ -487,6 +557,7 @@ int mlk_indcpa_enc(uint8_t c[MLKEM_INDCPA_BYTES],
   MLK_ALLOC(epp, mlk_poly, 1, context);
   MLK_ALLOC(sp_cache, mlk_polyvec_mulcache, 1, context);
 
+  #endif
   if (seed == NULL || at == NULL || sp == NULL || pkpv == NULL || ep == NULL ||
       b == NULL || v == NULL || k == NULL || epp == NULL || sp_cache == NULL)
   {
@@ -550,6 +621,9 @@ int mlk_indcpa_enc(uint8_t c[MLKEM_INDCPA_BYTES],
 cleanup:
   /* Specification: Partially implements
    * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+  #if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_ENC_WORKSPACE)
+  MLK_V26_CLEAN_ENC_WORKSPACE();
+  #else
   MLK_FREE(sp_cache, mlk_polyvec_mulcache, 1, context);
   MLK_FREE(epp, mlk_poly, 1, context);
   MLK_FREE(k, mlk_poly, 1, context);
@@ -560,6 +634,7 @@ cleanup:
   MLK_FREE(sp, mlk_polyvec, 1, context);
   MLK_FREE(at, mlk_polymat, 1, context);
   MLK_FREE(seed, uint8_t, MLKEM_SYMBYTES, context);
+  #endif
   return ret;
 }
 
