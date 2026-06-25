@@ -430,3 +430,23 @@ src/kem/ml_kem/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.before_v26
 experiments/layer3-v26-mlkem-enc-workspace/*.csv
 experiments/layer3-v26-mlkem-enc-workspace/*.txt
 experiments/layer3-v26-mlkem-enc-workspace/*.diff
+
+# Layer 3 v27 build outputs
+build-v27-mlkem-keypair-workspace/
+
+# Layer 3 v27 generated profiler binaries
+layer3-results/v27_*_profiler
+
+# Layer 3 v27 generated result files
+layer3-results/v27_*.csv
+layer3-results/v27_*.md
+layer3-results/v27_*.log
+
+# Layer 3 v27 source backups
+src/kem/ml_kem/mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.before_v27
+src/kem/ml_kem/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.before_v27
+
+# Layer 3 v27 scratch files
+experiments/layer3-v27-mlkem-keypair-workspace/*.csv
+experiments/layer3-v27-mlkem-keypair-workspace/*.txt
+experiments/layer3-v27-mlkem-keypair-workspace/*.diff

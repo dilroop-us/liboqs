@@ -371,6 +371,59 @@ __contract__(
  *            - We include buffer zeroization.
  */
 MLK_INTERNAL_API
+
+#if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_KEYPAIR_WORKSPACE)
+
+#define MLK_V27_WORKSPACE_ALIGN ((size_t)64)
+
+#if defined(MLK_ALIGN)
+#define MLK_V27_ALIGN_FIELD MLK_ALIGN
+#elif defined(MLKEM_ALIGN)
+#define MLK_V27_ALIGN_FIELD MLKEM_ALIGN
+#else
+#define MLK_V27_ALIGN_FIELD
+#endif
+
+typedef struct {
+    MLK_V27_ALIGN_FIELD mlk_polymat a;
+    MLK_V27_ALIGN_FIELD mlk_polyvec e;
+    MLK_V27_ALIGN_FIELD mlk_polyvec pkpv;
+    MLK_V27_ALIGN_FIELD mlk_polyvec skpv;
+    MLK_V27_ALIGN_FIELD mlk_polyvec_mulcache skpv_cache;
+    uint8_t buf[2 * MLKEM_SYMBYTES];
+    uint8_t coins_with_domain_separator[MLKEM_SYMBYTES + 1];
+} mlk_v27_keypair_workspace;
+
+static _Thread_local mlk_v27_keypair_workspace *mlk_v27_tls_keypair_workspace;
+
+size_t PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v27_keypair_workspace_bytes(void) {
+    return sizeof(mlk_v27_keypair_workspace);
+}
+
+int PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v27_keypair_workspace_set(void *workspace, size_t workspace_bytes) {
+    if (workspace == 0 || workspace_bytes < sizeof(mlk_v27_keypair_workspace)) {
+        return -1;
+    }
+
+    if (((size_t)workspace & (MLK_V27_WORKSPACE_ALIGN - 1u)) != 0u) {
+        return -2;
+    }
+
+    mlk_v27_tls_keypair_workspace = (mlk_v27_keypair_workspace *)workspace;
+    return 0;
+}
+
+#define MLK_V27_REQUIRE_KEYPAIR_WORKSPACE()          \
+    do {                                           \
+        if (mlk_v27_tls_keypair_workspace == 0) {  \
+            return -1;                              \
+        }                                          \
+    } while (0)
+
+#define MLK_V27_CLEAN_KEYPAIR_WORKSPACE() do { } while (0)
+
+#endif /* MLK_CONFIG_EXPERIMENTAL_CALLER_KEYPAIR_WORKSPACE */
+
 int mlk_indcpa_keypair_derand(uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
                               uint8_t sk[MLKEM_INDCPA_SECRETKEYBYTES],
                               const uint8_t coins[MLKEM_SYMBYTES],
@@ -379,6 +432,17 @@ int mlk_indcpa_keypair_derand(uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
   int ret = 0;
   const uint8_t *publicseed;
   const uint8_t *noiseseed;
+  #if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_KEYPAIR_WORKSPACE)
+  MLK_V27_REQUIRE_KEYPAIR_WORKSPACE();
+
+  uint8_t *buf = mlk_v27_tls_keypair_workspace->buf;
+  uint8_t *coins_with_domain_separator = mlk_v27_tls_keypair_workspace->coins_with_domain_separator;
+  mlk_polymat *a = &mlk_v27_tls_keypair_workspace->a;
+  mlk_polyvec *e = &mlk_v27_tls_keypair_workspace->e;
+  mlk_polyvec *pkpv = &mlk_v27_tls_keypair_workspace->pkpv;
+  mlk_polyvec *skpv = &mlk_v27_tls_keypair_workspace->skpv;
+  mlk_polyvec_mulcache *skpv_cache = &mlk_v27_tls_keypair_workspace->skpv_cache;
+  #else
   MLK_ALLOC(buf, uint8_t, 2 * MLKEM_SYMBYTES, context);
   MLK_ALLOC(coins_with_domain_separator, uint8_t, MLKEM_SYMBYTES + 1, context);
   MLK_ALLOC(a, mlk_polymat, 1, context);
@@ -387,6 +451,7 @@ int mlk_indcpa_keypair_derand(uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
   MLK_ALLOC(skpv, mlk_polyvec, 1, context);
   MLK_ALLOC(skpv_cache, mlk_polyvec_mulcache, 1, context);
 
+  #endif
   if (buf == NULL || coins_with_domain_separator == NULL || a == NULL ||
       e == NULL || pkpv == NULL || skpv == NULL || skpv_cache == NULL)
   {
@@ -450,6 +515,9 @@ int mlk_indcpa_keypair_derand(uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
 cleanup:
   /* Specification: Partially implements
    * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+  #if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_KEYPAIR_WORKSPACE)
+  MLK_V27_CLEAN_KEYPAIR_WORKSPACE();
+  #else
   MLK_FREE(skpv_cache, mlk_polyvec_mulcache, 1, context);
   MLK_FREE(skpv, mlk_polyvec, 1, context);
   MLK_FREE(pkpv, mlk_polyvec, 1, context);
@@ -457,6 +525,7 @@ cleanup:
   MLK_FREE(a, mlk_polymat, 1, context);
   MLK_FREE(coins_with_domain_separator, uint8_t, MLKEM_SYMBYTES + 1, context);
   MLK_FREE(buf, uint8_t, 2 * MLKEM_SYMBYTES, context);
+  #endif
   return ret;
 }
 
