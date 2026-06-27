@@ -711,18 +711,79 @@ cleanup:
  *            - We use a mulcache for the scalar product.
  *            - We include buffer zeroization. */
 MLK_INTERNAL_API
+
+#if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_DEC_WORKSPACE)
+
+#define MLK_V28_WORKSPACE_ALIGN ((size_t)64)
+
+#if defined(MLK_ALIGN)
+#define MLK_V28_ALIGN_FIELD MLK_ALIGN
+#elif defined(MLKEM_ALIGN)
+#define MLK_V28_ALIGN_FIELD MLKEM_ALIGN
+#else
+#define MLK_V28_ALIGN_FIELD
+#endif
+
+typedef struct {
+    MLK_V28_ALIGN_FIELD mlk_polyvec b;
+    MLK_V28_ALIGN_FIELD mlk_polyvec skpv;
+    MLK_V28_ALIGN_FIELD mlk_polyvec_mulcache b_cache;
+    MLK_V28_ALIGN_FIELD mlk_poly v;
+    MLK_V28_ALIGN_FIELD mlk_poly sb;
+} mlk_v28_dec_workspace;
+
+static _Thread_local mlk_v28_dec_workspace *mlk_v28_tls_dec_workspace;
+
+size_t PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v28_dec_workspace_bytes(void) {
+    return sizeof(mlk_v28_dec_workspace);
+}
+
+int PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v28_dec_workspace_set(void *workspace, size_t workspace_bytes) {
+    if (workspace == 0 || workspace_bytes < sizeof(mlk_v28_dec_workspace)) {
+        return -1;
+    }
+
+    if (((size_t)workspace & (MLK_V28_WORKSPACE_ALIGN - 1u)) != 0u) {
+        return -2;
+    }
+
+    mlk_v28_tls_dec_workspace = (mlk_v28_dec_workspace *)workspace;
+    return 0;
+}
+
+#define MLK_V28_REQUIRE_DEC_WORKSPACE()          \
+    do {                                       \
+        if (mlk_v28_tls_dec_workspace == 0) {  \
+            return -1;                          \
+        }                                      \
+    } while (0)
+
+#define MLK_V28_CLEAN_DEC_WORKSPACE() do { } while (0)
+
+#endif /* MLK_CONFIG_EXPERIMENTAL_CALLER_DEC_WORKSPACE */
+
 int mlk_indcpa_dec(uint8_t m[MLKEM_INDCPA_MSGBYTES],
                    const uint8_t c[MLKEM_INDCPA_BYTES],
                    const uint8_t sk[MLKEM_INDCPA_SECRETKEYBYTES],
                    MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
 {
   int ret = 0;
+  #if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_DEC_WORKSPACE)
+  MLK_V28_REQUIRE_DEC_WORKSPACE();
+
+  mlk_polyvec *b = &mlk_v28_tls_dec_workspace->b;
+  mlk_polyvec *skpv = &mlk_v28_tls_dec_workspace->skpv;
+  mlk_poly *v = &mlk_v28_tls_dec_workspace->v;
+  mlk_poly *sb = &mlk_v28_tls_dec_workspace->sb;
+  mlk_polyvec_mulcache *b_cache = &mlk_v28_tls_dec_workspace->b_cache;
+  #else
   MLK_ALLOC(b, mlk_polyvec, 1, context);
   MLK_ALLOC(skpv, mlk_polyvec, 1, context);
   MLK_ALLOC(v, mlk_poly, 1, context);
   MLK_ALLOC(sb, mlk_poly, 1, context);
   MLK_ALLOC(b_cache, mlk_polyvec_mulcache, 1, context);
 
+  #endif
   if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
   {
     ret = MLK_ERR_OUT_OF_MEMORY;
@@ -745,11 +806,15 @@ int mlk_indcpa_dec(uint8_t m[MLKEM_INDCPA_MSGBYTES],
 cleanup:
   /* Specification: Partially implements
    * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+  #if defined(MLK_CONFIG_EXPERIMENTAL_CALLER_DEC_WORKSPACE)
+  MLK_V28_CLEAN_DEC_WORKSPACE();
+  #else
   MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
   MLK_FREE(sb, mlk_poly, 1, context);
   MLK_FREE(v, mlk_poly, 1, context);
   MLK_FREE(skpv, mlk_polyvec, 1, context);
   MLK_FREE(b, mlk_polyvec, 1, context);
+  #endif
   return ret;
 }
 
