@@ -470,3 +470,23 @@ src/kem/ml_kem/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.before_v28
 experiments/layer3-v28-mlkem-dec-workspace/*.csv
 experiments/layer3-v28-mlkem-dec-workspace/*.txt
 experiments/layer3-v28-mlkem-dec-workspace/*.diff
+
+# Layer 3 v29 build outputs
+build-v29-mlkem-lifecycle-workspace/
+
+# Layer 3 v29 generated profiler binaries
+layer3-results/v29_*_profiler
+
+# Layer 3 v29 generated result files
+layer3-results/v29_*.csv
+layer3-results/v29_*.md
+layer3-results/v29_*.log
+
+# Layer 3 v29 source backups
+src/kem/ml_kem/mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.before_v29
+src/kem/ml_kem/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.before_v29
+
+# Layer 3 v29 scratch files
+experiments/layer3-v29-mlkem-lifecycle-workspace/*.csv
+experiments/layer3-v29-mlkem-lifecycle-workspace/*.txt
+experiments/layer3-v29-mlkem-lifecycle-workspace/*.diff

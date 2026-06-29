@@ -762,6 +762,46 @@ int PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v28_dec_workspace_set(void *workspace, siz
 
 #endif /* MLK_CONFIG_EXPERIMENTAL_CALLER_DEC_WORKSPACE */
 
+#if defined(MLK_CONFIG_EXPERIMENTAL_COMPACT_LIFECYCLE_WORKSPACE) && defined(MLK_CONFIG_EXPERIMENTAL_CALLER_ENC_WORKSPACE) && defined(MLK_CONFIG_EXPERIMENTAL_CALLER_KEYPAIR_WORKSPACE) && defined(MLK_CONFIG_EXPERIMENTAL_CALLER_DEC_WORKSPACE)
+
+#define MLK_V29_WORKSPACE_ALIGN ((size_t)64)
+
+typedef struct {
+    union {
+        mlk_v26_enc_workspace enc;
+        mlk_v27_keypair_workspace keypair;
+        mlk_v28_dec_workspace dec;
+    } op;
+} mlk_v29_lifecycle_workspace;
+
+size_t PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v29_lifecycle_workspace_bytes(void) {
+    return sizeof(mlk_v29_lifecycle_workspace);
+}
+
+int PQCP_MLKEM_NATIVE_MLKEM768_X86_64_v29_lifecycle_workspace_set(void *workspace, size_t workspace_bytes) {
+    mlk_v29_lifecycle_workspace *ws = 0;
+
+    if (workspace == 0 || workspace_bytes < sizeof(mlk_v29_lifecycle_workspace)) {
+        return -1;
+    }
+
+    if (((size_t)workspace & (MLK_V29_WORKSPACE_ALIGN - 1u)) != 0u) {
+        return -2;
+    }
+
+    ws = (mlk_v29_lifecycle_workspace *)workspace;
+
+    mlk_v26_tls_enc_workspace = &ws->op.enc;
+    mlk_v27_tls_keypair_workspace = &ws->op.keypair;
+    mlk_v28_tls_dec_workspace = &ws->op.dec;
+
+    return 0;
+}
+
+#endif /* MLK_CONFIG_EXPERIMENTAL_COMPACT_LIFECYCLE_WORKSPACE */
+
+
+
 int mlk_indcpa_dec(uint8_t m[MLKEM_INDCPA_MSGBYTES],
                    const uint8_t c[MLKEM_INDCPA_BYTES],
                    const uint8_t sk[MLKEM_INDCPA_SECRETKEYBYTES],
