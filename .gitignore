@@ -490,3 +490,19 @@ src/kem/ml_kem/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.before_v29
 experiments/layer3-v29-mlkem-lifecycle-workspace/*.csv
 experiments/layer3-v29-mlkem-lifecycle-workspace/*.txt
 experiments/layer3-v29-mlkem-lifecycle-workspace/*.diff
+
+# Layer 3 v31 generated binaries and logs
+layer3-results/v31_combined_correctness_harness
+layer3-results/v31_build.log
+layer3-results/v31_combined_correctness_run.log
+layer3-results/v31_lifecycle_symbols.txt
+
+# Layer 3 v31 generated CSVs
+layer3-results/v31_combined_correctness.csv
+layer3-results/v31_combined_workspace.csv
+
+# Layer 3 v31 generated report
+layer3-results/v31_combined_correctness_report.md
+
+# Layer 3 v31 generated header
+experiments/layer3-v31-combined-correctness/v31_workspace_setup.generated.h
