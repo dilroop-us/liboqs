@@ -506,3 +506,18 @@ layer3-results/v31_combined_correctness_report.md
 
 # Layer 3 v31 generated header
 experiments/layer3-v31-combined-correctness/v31_workspace_setup.generated.h
+
+# Layer 3 v32 generated binaries and logs
+layer3-results/v32_workspace_misuse_harness
+layer3-results/v32_build.log
+layer3-results/v32_workspace_misuse_run.log
+layer3-results/v32_lifecycle_symbols.txt
+
+# Layer 3 v32 generated CSV
+layer3-results/v32_workspace_misuse.csv
+
+# Layer 3 v32 generated report
+layer3-results/v32_workspace_misuse_report.md
+
+# Layer 3 v32 generated header
+experiments/layer3-v32-workspace-misuse/v32_workspace_setup.generated.h
