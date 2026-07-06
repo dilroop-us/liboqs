@@ -538,3 +538,22 @@ layer3-results/v33_differential_report.md
 
 # Layer 3 v33 generated header
 experiments/layer3-v33-differential/v33_workspace_setup.generated.h
+
+# Layer 3 v34 generated build dirs
+build-v34-asan-ubsan/
+build-v34-valgrind/
+
+# Layer 3 v34 generated binaries and logs
+layer3-results/v34_asan_ubsan_harness
+layer3-results/v34_valgrind_harness
+layer3-results/v34_build.log
+layer3-results/v34_asan_ubsan_run.log
+layer3-results/v34_valgrind_run.log
+layer3-results/v34_lifecycle_symbols.txt
+
+# Layer 3 v34 generated CSV/report
+layer3-results/v34_memory_safety.csv
+layer3-results/v34_memory_safety_report.md
+
+# Layer 3 v34 generated header
+experiments/layer3-v34-memory-safety/v34_workspace_setup.generated.h
