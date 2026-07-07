@@ -557,3 +557,27 @@ layer3-results/v34_memory_safety_report.md
 
 # Layer 3 v34 generated header
 experiments/layer3-v34-memory-safety/v34_workspace_setup.generated.h
+
+# Layer 3 v35 generated build dirs
+build-v35-constrained-budget/
+
+# Layer 3 v35 generated binaries and logs
+layer3-results/v35_constrained_budget_harness
+layer3-results/v35_build.log
+layer3-results/v35_lifecycle_symbols.txt
+layer3-results/v35_constrained_budget_run.log
+layer3-results/v35_time.log
+
+# Layer 3 v35 generated CSV/report
+layer3-results/v35_constrained_budget.csv
+layer3-results/v35_size.csv
+layer3-results/v35_stack_usage.csv
+layer3-results/v35_constrained_budget_report.md
+
+# Layer 3 v35 generated header
+experiments/layer3-v35-constrained-budget/v35_workspace_setup.generated.h
+
+# Layer 3 v35 stack usage files
+v35*.su
+layer3-results/v35*.su
+experiments/layer3-v35-constrained-budget/*.su
