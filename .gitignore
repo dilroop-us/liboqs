@@ -581,3 +581,19 @@ experiments/layer3-v35-constrained-budget/v35_workspace_setup.generated.h
 v35*.su
 layer3-results/v35*.su
 experiments/layer3-v35-constrained-budget/*.su
+
+# Layer 3 v36 generated build dirs
+build-v36-threading-tls/
+
+# Layer 3 v36 generated binaries and logs
+layer3-results/v36_threading_tls_harness
+layer3-results/v36_build.log
+layer3-results/v36_lifecycle_symbols.txt
+layer3-results/v36_threading_tls_run.log
+
+# Layer 3 v36 generated CSV/report
+layer3-results/v36_threading_tls.csv
+layer3-results/v36_threading_tls_report.md
+
+# Layer 3 v36 generated header
+experiments/layer3-v36-threading-tls/v36_workspace_setup.generated.h
