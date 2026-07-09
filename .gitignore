@@ -597,3 +597,19 @@ layer3-results/v36_threading_tls_report.md
 
 # Layer 3 v36 generated header
 experiments/layer3-v36-threading-tls/v36_workspace_setup.generated.h
+
+# Layer 3 v37 generated build dirs
+build-v37-matrix-*/
+
+# Layer 3 v37 generated logs
+layer3-results/v37-build-logs/
+
+# Layer 3 v37 generated binaries
+layer3-results/v37_build_matrix_harness_*
+
+# Layer 3 v37 generated CSV/report
+layer3-results/v37_build_matrix.csv
+layer3-results/v37_build_matrix_report.md
+
+# Layer 3 v37 generated header
+experiments/layer3-v37-build-matrix/v37_workspace_setup.generated.h
