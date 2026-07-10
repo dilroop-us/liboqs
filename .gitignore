@@ -613,3 +613,19 @@ layer3-results/v37_build_matrix_report.md
 
 # Layer 3 v37 generated header
 experiments/layer3-v37-build-matrix/v37_workspace_setup.generated.h
+
+# Layer 3 v38 generated build dirs
+build-v38-timing-leakage/
+
+# Layer 3 v38 generated binaries and logs
+layer3-results/v38_timing_leakage_harness
+layer3-results/v38_build.log
+layer3-results/v38_lifecycle_symbols.txt
+layer3-results/v38_timing_leakage_run.log
+
+# Layer 3 v38 generated CSV/report
+layer3-results/v38_timing_leakage.csv
+layer3-results/v38_timing_leakage_report.md
+
+# Layer 3 v38 generated header
+experiments/layer3-v38-timing-leakage/v38_workspace_setup.generated.h
