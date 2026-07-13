@@ -629,3 +629,7 @@ layer3-results/v38_timing_leakage_report.md
 
 # Layer 3 v38 generated header
 experiments/layer3-v38-timing-leakage/v38_workspace_setup.generated.h
+
+# Layer 3 v39 generated CSV/report
+layer3-results/v39_evidence_summary.csv
+layer3-results/v39_final_evidence_report.md
