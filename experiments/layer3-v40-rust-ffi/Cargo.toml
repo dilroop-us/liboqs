@@ -1,0 +1,7 @@
+[package]
+name = "layer3_v40_rust_ffi"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
