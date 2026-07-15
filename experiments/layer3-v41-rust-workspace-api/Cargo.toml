@@ -1,0 +1,7 @@
+[package]
+name = "layer3_v41_rust_workspace_api"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]

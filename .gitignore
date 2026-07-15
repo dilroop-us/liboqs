@@ -646,3 +646,13 @@ layer3-results/v40_lifecycle_symbols.txt
 layer3-results/v40_rust_ffi_run.log
 layer3-results/v40_rust_ffi.csv
 layer3-results/v40_rust_ffi_report.md
+
+# Layer 3 v41 generated build dirs
+build-v41-rust-workspace-api/
+experiments/layer3-v41-rust-workspace-api/target/
+
+# Layer 3 v41 generated logs/results
+layer3-results/v41_lifecycle_symbols.txt
+layer3-results/v41_rust_workspace_api_run.log
+layer3-results/v41_rust_workspace_api.csv
+layer3-results/v41_rust_workspace_api_report.md
