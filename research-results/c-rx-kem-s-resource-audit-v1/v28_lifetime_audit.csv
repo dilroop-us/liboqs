@@ -1,0 +1,6 @@
+object,bytes,birth,last_use,secret_class,reconstructable,reuse_candidate,notes
+b,1536,unpack_ciphertext,basemul,mixed,yes,limited,ciphertext polynomial vector; required as basemul input
+skpv,1536,unpack_sk,basemul,secret,yes,limited,decoded secret-key vector
+b_cache,768,mulcache_compute,basemul,mixed,yes,limited,cache derived from b
+v,512,unpack_ciphertext,poly_tomsg,mixed,yes,no_current_schedule,needed until message recovery
+sb,512,basemul,poly_sub,mixed,yes,limited,basemul output

@@ -1,0 +1,12 @@
+phase,live_objects,semantic_live_bytes
+extract_seed_only,seed,32
+generate_matrix,seed+at,4640
+generate_sp,at+sp,6144
+compute_sp_cache,at+sp+sp_cache,6912
+matrix_vector_multiply,at+sp+sp_cache+b,8448
+late_decode_pkpv,sp+sp_cache+b+pkpv,5376
+basemul,sp+sp_cache+b+pkpv+v,5888
+late_generate_ep_epp_k,b+v+ep+epp+k,4608
+after_add_ep,b+v+epp+k,3072
+after_add_epp,b+v+k,2560
+pack_ciphertext,b+v,2048

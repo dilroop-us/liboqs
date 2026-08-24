@@ -1,0 +1,4 @@
+candidate,target,current_cost,candidate_target,estimated_saving,evidence_status,latency_penalty,cpu_penalty,complexity,interoperability_risk,notes
+S1,re-encryption temporary workspace,13088,9984,3104,analytical_hypothesis,TBD,TBD,TBD,low,delay ep/epp/k generation and reuse dead storage; not implemented
+S2,persistent decapsulation-key storage,2400,TBD,TBD,under_audit,TBD,TBD,TBD,low_if_storage_only,need reconstruction/storage model
+S3,concurrent receiver RAM,scales_with_active_requests,fixed_workspace_pool,workload_dependent,analytical_model,queue_dependent,low,TBD,very_low,bound active crypto contexts

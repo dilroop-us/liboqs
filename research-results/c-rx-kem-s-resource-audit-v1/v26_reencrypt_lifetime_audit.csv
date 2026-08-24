@@ -1,0 +1,11 @@
+object,bytes,birth,last_use,secret_class,reconstructable,reuse_candidate,notes
+at,4608,gen_matrix,matvec_mul,public,yes,strong,largest object; dead immediately after matrix-vector multiply
+sp,1536,noise_eta1,basemul,secret_derived,yes,strong,dead after v computation
+pkpv,1536,unpack_pk,basemul,public,yes,strong,dead after v computation
+ep,1536,noise_eta2,polyvec_add_b_ep,secret_derived,yes,strong,generated early but only consumed much later
+b,1536,matvec_mul,pack_ciphertext,mixed,yes,no,final ciphertext vector
+sp_cache,768,mulcache_compute,basemul,secret_derived,yes,strong,dead after basemul
+v,512,basemul,pack_ciphertext,mixed,yes,no,final ciphertext polynomial
+k,512,poly_frommsg,poly_add_v_k,secret_derived,yes,strong,generated early but consumed late
+epp,512,noise_eta2,poly_add_v_epp,secret_derived,yes,strong,generated early but consumed late
+seed,32,unpack_pk,gen_matrix,public,yes,strong,dead very early

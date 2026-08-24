@@ -1,0 +1,6 @@
+component,bytes,persistent,security_class,reconstructable_from_current_dk,notes
+indcpa_secret,1152,yes,secret,TBD,core PKE decryption key material
+embedded_public_key,1184,yes,public,TBD,used during re-encryption
+hash_public_key,32,yes,public_derived,yes,hash of embedded public key
+rejection_secret_z,32,yes,secret,no,implicit-rejection secret
+total,2400,yes,mixed,TBD,measured ML-KEM-768 decapsulation key

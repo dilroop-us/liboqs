@@ -1,0 +1,11 @@
+phase,live_objects,semantic_live_bytes
+unpack_pk_and_frommsg,pkpv+seed+k,2080
+gen_matrix,pkpv+seed+k+at,6688
+after_noise_generation,at+sp+pkpv+ep+k+epp,10240
+after_sp_cache,at+sp+pkpv+ep+sp_cache+k+epp,11008
+during_matvec,at+sp+pkpv+ep+b+sp_cache+k+epp,12544
+during_basemul,sp+pkpv+ep+b+sp_cache+v+k+epp,8448
+after_basemul,ep+b+v+k+epp,4608
+after_add_ep,b+v+k+epp,3072
+after_add_epp,b+v+k,2560
+pack_ciphertext,b+v,2048
