@@ -18,6 +18,9 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_ml_dsa_44,
 		OQS_SIG_alg_ml_dsa_65,
 		OQS_SIG_alg_ml_dsa_87,
+		OQS_SIG_alg_ml_dsa_44_extmu,
+		OQS_SIG_alg_ml_dsa_65_extmu,
+		OQS_SIG_alg_ml_dsa_87_extmu,
 		OQS_SIG_alg_falcon_512,
 		OQS_SIG_alg_falcon_1024,
 		OQS_SIG_alg_falcon_padded_512,
@@ -272,6 +275,27 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_87)) {
 #ifdef OQS_ENABLE_SIG_ml_dsa_87
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_44_extmu)) {
+#ifdef OQS_ENABLE_SIG_ml_dsa_44_extmu
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_65_extmu)) {
+#ifdef OQS_ENABLE_SIG_ml_dsa_65_extmu
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_87_extmu)) {
+#ifdef OQS_ENABLE_SIG_ml_dsa_87_extmu
 		return 1;
 #else
 		return 0;
@@ -1681,6 +1705,27 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 		return NULL;
 #endif
 
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_44_extmu)) {
+#ifdef OQS_ENABLE_SIG_ml_dsa_44_extmu
+		return OQS_SIG_ml_dsa_44_extmu_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_65_extmu)) {
+#ifdef OQS_ENABLE_SIG_ml_dsa_65_extmu
+		return OQS_SIG_ml_dsa_65_extmu_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ml_dsa_87_extmu)) {
+#ifdef OQS_ENABLE_SIG_ml_dsa_87_extmu
+		return OQS_SIG_ml_dsa_87_extmu_new();
+#else
+		return NULL;
+#endif
+
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_falcon_512)) {
 #ifdef OQS_ENABLE_SIG_falcon_512
 		return OQS_SIG_falcon_512_new();
@@ -3060,7 +3105,7 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 }
 
 OQS_API OQS_STATUS OQS_SIG_keypair(const OQS_SIG *sig, uint8_t *public_key, uint8_t *secret_key) {
-	if (sig == NULL || sig->keypair(public_key, secret_key) != OQS_SUCCESS) {
+	if (sig == NULL || sig->keypair == NULL || sig->keypair(public_key, secret_key) != OQS_SUCCESS) {
 		return OQS_ERROR;
 	} else {
 		return OQS_SUCCESS;
@@ -3068,7 +3113,7 @@ OQS_API OQS_STATUS OQS_SIG_keypair(const OQS_SIG *sig, uint8_t *public_key, uint
 }
 
 OQS_API OQS_STATUS OQS_SIG_sign(const OQS_SIG *sig, uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
-	if (sig == NULL || sig->sign(signature, signature_len, message, message_len, secret_key) != OQS_SUCCESS) {
+	if (sig == NULL || sig->sign == NULL || sig->sign(signature, signature_len, message, message_len, secret_key) != OQS_SUCCESS) {
 		return OQS_ERROR;
 	} else {
 		return OQS_SUCCESS;
@@ -3076,7 +3121,7 @@ OQS_API OQS_STATUS OQS_SIG_sign(const OQS_SIG *sig, uint8_t *signature, size_t *
 }
 
 OQS_API OQS_STATUS OQS_SIG_sign_with_ctx_str(const OQS_SIG *sig, uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
-	if (sig == NULL || sig->sign_with_ctx_str(signature, signature_len, message, message_len, ctx_str, ctx_str_len, secret_key) != OQS_SUCCESS) {
+	if (sig == NULL || sig->sign_with_ctx_str == NULL || sig->sign_with_ctx_str(signature, signature_len, message, message_len, ctx_str, ctx_str_len, secret_key) != OQS_SUCCESS) {
 		return OQS_ERROR;
 	} else {
 		return OQS_SUCCESS;
@@ -3084,7 +3129,7 @@ OQS_API OQS_STATUS OQS_SIG_sign_with_ctx_str(const OQS_SIG *sig, uint8_t *signat
 }
 
 OQS_API OQS_STATUS OQS_SIG_verify(const OQS_SIG *sig, const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
-	if (sig == NULL || sig->verify(message, message_len, signature, signature_len, public_key) != OQS_SUCCESS) {
+	if (sig == NULL || sig->verify == NULL || sig->verify(message, message_len, signature, signature_len, public_key) != OQS_SUCCESS) {
 		return OQS_ERROR;
 	} else {
 		return OQS_SUCCESS;
@@ -3092,7 +3137,7 @@ OQS_API OQS_STATUS OQS_SIG_verify(const OQS_SIG *sig, const uint8_t *message, si
 }
 
 OQS_API OQS_STATUS OQS_SIG_verify_with_ctx_str(const OQS_SIG *sig, const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
-	if (sig == NULL || sig->verify_with_ctx_str(message, message_len, signature, signature_len, ctx_str, ctx_str_len, public_key) != OQS_SUCCESS) {
+	if (sig == NULL || sig->verify_with_ctx_str == NULL || sig->verify_with_ctx_str(message, message_len, signature, signature_len, ctx_str, ctx_str_len, public_key) != OQS_SUCCESS) {
 		return OQS_ERROR;
 	} else {
 		return OQS_SUCCESS;

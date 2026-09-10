@@ -1,0 +1,13 @@
+build_case,build_type,cflags_profile,linkage,mlkem_workspace_bytes,mldsa_workspace_bytes,combined_workspace_bytes,mlkem_symbol_pairs,mldsa_symbol_pairs,component,iterations,passed,failed,status,notes
+release_static_o3,Release,O3,static,13088,44064,57152,2,2,mlkem_valid_flow,5,5,0,PASS,core correctness
+release_static_o3,Release,O3,static,13088,44064,57152,2,2,mldsa_valid_and_negative,5,5,0,PASS,core correctness
+release_static_o3,Release,O3,static,13088,44064,57152,2,2,combined_mlkem_mldsa_sequence,5,5,0,PASS,core correctness
+relwithdebinfo_static_o2,RelWithDebInfo,O2_debug,static,13088,44064,57152,2,2,mlkem_valid_flow,5,5,0,PASS,core correctness
+relwithdebinfo_static_o2,RelWithDebInfo,O2_debug,static,13088,44064,57152,2,2,mldsa_valid_and_negative,5,5,0,PASS,core correctness
+relwithdebinfo_static_o2,RelWithDebInfo,O2_debug,static,13088,44064,57152,2,2,combined_mlkem_mldsa_sequence,5,5,0,PASS,core correctness
+debug_static_o0,Debug,O0_debug,static,13088,44064,57152,2,2,mlkem_valid_flow,5,5,0,PASS,core correctness
+debug_static_o0,Debug,O0_debug,static,13088,44064,57152,2,2,mldsa_valid_and_negative,5,5,0,PASS,core correctness
+debug_static_o0,Debug,O0_debug,static,13088,44064,57152,2,2,combined_mlkem_mldsa_sequence,5,5,0,PASS,core correctness
+size_static_os,Release,Os,static,13088,44064,57152,2,2,mlkem_valid_flow,5,5,0,PASS,core correctness
+size_static_os,Release,Os,static,13088,44064,57152,2,2,mldsa_valid_and_negative,5,5,0,PASS,core correctness
+size_static_os,Release,Os,static,13088,44064,57152,2,2,combined_mlkem_mldsa_sequence,5,5,0,PASS,core correctness

@@ -1,0 +1,4 @@
+case,iterations,passed,failed,status,notes
+rust_mlkem_valid_flow,10,10,0,PASS,Rust FFI ML-KEM keypair/encaps/decaps/shared-secret equality
+rust_mldsa_valid_and_negative,10,10,0,PASS,Rust FFI ML-DSA sign/verify plus modified message/signature rejection
+rust_combined_mlkem_mldsa_sequence,10,10,0,PASS,Rust FFI combined ML-KEM transcript plus ML-DSA signature flow
